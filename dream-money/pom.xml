@@ -12,5 +12,12 @@
 
     <artifactId>money</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.wangdan.dream</groupId>
+            <artifactId>parent</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
