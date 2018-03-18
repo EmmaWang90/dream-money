@@ -12,5 +12,17 @@
 
     <artifactId>persistence</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.wangdan.dream</groupId>
+            <artifactId>parent</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.38</version>
+        </dependency>
+    </dependencies>
 </project>

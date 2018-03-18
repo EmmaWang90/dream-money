@@ -1,4 +1,4 @@
-package com.wangdan.dream.money.orm;
+package com.wangdan.dream.persistence.orm.table;
 
 public enum DataType {
     STRING, DATE, INTEGER, DOUBLE

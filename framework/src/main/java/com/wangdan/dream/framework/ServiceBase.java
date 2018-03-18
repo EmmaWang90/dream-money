@@ -27,6 +27,14 @@ public class ServiceBase {
     }
 
     private void initialize() {
+        injectService();
+        injectProperties();
+    }
+
+    private void injectProperties() {
+    }
+
+    private void injectService(){
         List<InjectService> annotations = new ArrayList<>();
         annotations.add(this.getClass().getDeclaredAnnotation(InjectService.class));
         if (this.getClass().getDeclaredAnnotation(InjectServices.class) != null)

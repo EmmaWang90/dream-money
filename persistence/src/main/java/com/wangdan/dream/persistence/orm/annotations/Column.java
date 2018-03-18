@@ -1,4 +1,6 @@
-package com.wangdan.dream.money.orm;
+package com.wangdan.dream.persistence.orm.annotations;
+
+import com.wangdan.dream.persistence.orm.table.DataType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,4 +1,4 @@
-package com.wangdan.dream.money.orm;
+package com.wangdan.dream.persistence.orm;
 
 public class EntityManagerImpl implements EntityManager {
     public boolean save(Object entity) {
