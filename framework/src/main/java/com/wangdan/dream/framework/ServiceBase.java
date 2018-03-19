@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public class ServiceBase {
     private Map<Class<? extends ServiceBase>, List<ServiceBase>> childrenServices = new HashMap<>();
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    protected Logger logger = LoggerFactory.getLogger(getClass());
     private ServiceBase parent;
     private ServiceProperty serviceProperty = null;
 

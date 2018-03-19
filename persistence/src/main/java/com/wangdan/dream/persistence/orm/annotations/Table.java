@@ -13,4 +13,6 @@ public @interface Table {
     String value() default "";
 
     Class<? extends TableName> tableClass() default TableName.class;
+
+    String period() default "YEAR";
 }

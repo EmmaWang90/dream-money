@@ -1,6 +1,5 @@
 package com.wangdan.dream.persistence.orm.table;
 
-
 import com.google.common.base.Joiner;
 
 import java.util.ArrayList;
@@ -9,17 +8,26 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class DynamicTableName extends TableName {
+public class TableNameUtil {
     private static String SEPERATE = "_";
+    private static TableNameUtil instance = new TableNameUtil();
 
-    public static String getTableName(String period, String tableName) {
+    private TableNameUtil() {
+
+    }
+
+    public static TableNameUtil getInstance() {
+        return instance;
+    }
+
+    public String getTableName(String period, String tableName) {
         if (period == null)
             return tableName;
         String suffix = calculateSuffix(period);
         return tableName + suffix;
     }
 
-    private static String calculateSuffix(String period) {
+    private String calculateSuffix(String period) {
         Calendar calendar = new GregorianCalendar();
         List<Integer> numbers = new ArrayList();
         switch (period) {
