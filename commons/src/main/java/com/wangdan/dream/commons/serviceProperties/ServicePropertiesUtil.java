@@ -4,7 +4,7 @@ import java.io.File;
 
 public class ServicePropertiesUtil {
     public static ServiceProperty getServiceProperty(Class<?> clazz){
-        Properties serviceProperties = clazz.getDeclaredAnnotation(Properties.class);
+        PropertyFile serviceProperties = clazz.getDeclaredAnnotation(PropertyFile.class);
         if (serviceProperties != null)
         {
             File file = new File(serviceProperties.value());

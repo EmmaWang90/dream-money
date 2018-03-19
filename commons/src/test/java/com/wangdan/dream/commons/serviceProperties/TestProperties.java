@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@Properties("./src/test/resources/test.cfg")
+@PropertyFile("./src/test/resources/test.cfg")
 public class TestProperties {
     @Test
     public void test(){

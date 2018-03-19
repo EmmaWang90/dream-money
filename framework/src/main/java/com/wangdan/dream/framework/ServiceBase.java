@@ -1,5 +1,8 @@
 package com.wangdan.dream.framework;
 
+import com.wangdan.dream.commons.serviceProperties.Property;
+import com.wangdan.dream.commons.serviceProperties.ServicePropertiesUtil;
+import com.wangdan.dream.commons.serviceProperties.ServiceProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +19,7 @@ public class ServiceBase {
     private Map<Class<? extends ServiceBase>, List<ServiceBase>> childrenServices = new HashMap<>();
     private Logger logger = LoggerFactory.getLogger(getClass());
     private ServiceBase parent;
+    private ServiceProperty serviceProperty = null;
 
     public ServiceBase(ServiceBase parent) {
         this.parent = parent;
@@ -27,14 +31,15 @@ public class ServiceBase {
     }
 
     private void initialize() {
-        injectService();
-        injectProperties();
+        initializeService();
+        initializeProperties();
     }
 
-    private void injectProperties() {
+    private void initializeProperties() {
+        this.serviceProperty = ServicePropertiesUtil.getServiceProperty(this.getClass());
     }
 
-    private void injectService(){
+    private void initializeService() {
         List<InjectService> annotations = new ArrayList<>();
         annotations.add(this.getClass().getDeclaredAnnotation(InjectService.class));
         if (this.getClass().getDeclaredAnnotation(InjectServices.class) != null)
@@ -58,10 +63,39 @@ public class ServiceBase {
     }
 
     private void inject() {
-        injectField();
+        injectService();
+        try {
+            injectProperty();
+        } catch (IllegalAccessException e) {
+            logger.error("injectPrperty", e);
+        }
     }
 
-    private void injectField() {
+    private void injectProperty() throws IllegalAccessException {
+        if (serviceProperty == null)
+            return;
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            Property property = field.getAnnotation(Property.class);
+            if (property != null) {
+                String value = serviceProperty.getString(property.value(), property.defaultValue());
+                Class fieldClass = field.getType();
+                field.setAccessible(true);
+                if (fieldClass.equals(String.class))
+                    field.set(this, value);
+                else if (fieldClass.equals(short.class))
+                    field.setShort(this, Short.parseShort(value));
+                else if (fieldClass.equals(int.class))
+                    field.setInt(this, Integer.parseInt(value));
+                else if (fieldClass.equals(Double.class))
+                    field.setDouble(this, Double.parseDouble(value));
+                else
+                    logger.warn("failed to inject property for {}, {}", field, value);
+            }
+        }
+    }
+
+    private void injectService() {
         Field[] fields = this.getClass().getDeclaredFields();
         for (Field field : fields) {
             Service service = field.getAnnotation(Service.class);
