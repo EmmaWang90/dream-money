@@ -33,6 +33,8 @@ public class DatabaseConnectionFactory extends ServiceBase {
         if (connection == null) {
             try {
                 connection = DriverManager.getConnection(dbUrl, user, password);
+                connection.setSchema("test");
+                connection.setAutoCommit(false);
             } catch (SQLException e) {
                 logger.error("failed to connect db", e);
             }

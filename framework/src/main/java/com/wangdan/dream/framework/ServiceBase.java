@@ -28,6 +28,9 @@ public class ServiceBase {
     public void start() {
         initialize();
         inject();
+        for (Class<? extends ServiceBase> clazz : childrenServices.keySet())
+            for (ServiceBase serviceBase : childrenServices.get(clazz))
+                serviceBase.start();
     }
 
     private void initialize() {
@@ -47,13 +50,13 @@ public class ServiceBase {
         for (InjectService injectService : annotations) {
             if (injectService == null)
                 continue;
-            Class<? extends ServiceBase> implementationClass = injectService.implementation();
+            Class<? extends ServiceBase> implementationClass = injectService.value() != ServiceBase.class ? injectService.value() : injectService.implementation();
             Constructor[] constructors = implementationClass.getConstructors();
             for (Constructor constructor : constructors) {
                 if (constructor.getParameterCount() == 1 && Arrays.equals(constructor.getParameterTypes(), new Class[]{ServiceBase.class})) {
                     try {
                         ServiceBase instance = (ServiceBase) constructor.newInstance(this);
-                        this.addService(injectService.accessClass(), instance);
+                        this.addService(injectService.value() != ServiceBase.class? injectService.value() : injectService.accessClass(), instance);
                     } catch (Exception e) {
                         logger.error("failed to create instance for {}", implementationClass, e);
                     }

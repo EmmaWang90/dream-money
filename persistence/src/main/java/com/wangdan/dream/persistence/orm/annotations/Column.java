@@ -1,7 +1,5 @@
 package com.wangdan.dream.persistence.orm.annotations;
 
-import com.wangdan.dream.persistence.orm.table.DataType;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,5 +12,9 @@ public @interface Column {
 
     boolean isPrimaryKey() default false;
 
-    DataType dataType() default DataType.STRING;
+    int displaySize() default 15;
+
+    boolean notNull() default false;
+
+    boolean unsigned() default false;
 }

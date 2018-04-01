@@ -20,4 +20,8 @@ public class DatabaseServiceImpl extends ServiceBase {
         super.start();
         entityManager = new EntityManagerImpl(databaseConnectionFactory.getConnection());
     }
+
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
 }
