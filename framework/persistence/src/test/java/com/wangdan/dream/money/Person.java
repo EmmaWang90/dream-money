@@ -8,27 +8,13 @@ import java.util.Date;
 @Table
 public class Person {
     @Column
+    private Date birthday;
+    @Column
     private Integer id;
     @Column
-    private String name;
+    private Double money;
     @Column
-    private Date birthday;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    private String name;
 
     public Date getBirthday() {
         return birthday;
@@ -36,6 +22,14 @@ public class Person {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Double getMoney() {
@@ -46,6 +40,11 @@ public class Person {
         this.money = money;
     }
 
-    @Column
-    private Double money;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

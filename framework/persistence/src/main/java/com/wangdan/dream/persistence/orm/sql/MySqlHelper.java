@@ -8,7 +8,7 @@ import static java.util.stream.Collectors.toList;
 
 public class MySqlHelper {
 
-    public static String getCreate(Class<?> clazz){
+    public static String getCreate(Class<?> clazz) {
         EntityMetaData entityMetaData = EntityMetaDataHelper.getEntityMetaData(clazz);
         String tableName = entityMetaData.getTableName();
         StringBuilder stringBuilder = new StringBuilder("CREATE TABLE IF NOT EXIST");

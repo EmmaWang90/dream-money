@@ -13,11 +13,7 @@ abstract public class ServiceFactoryBase<T> extends ServiceBase {
         super(parent);
     }
 
-    @Override
-    public void start() {
-        super.start();
-        createServicePool();
-    }
+    protected abstract T createService(String serviceName, Properties properties);
 
     private void createServicePool() {
         Enumeration<?> servicePropertyKeys = super.serviceProperty.getKeys();
@@ -38,6 +34,10 @@ abstract public class ServiceFactoryBase<T> extends ServiceBase {
         }
     }
 
-    protected abstract T createService(String serviceName, Properties properties);
+    @Override
+    public void start() {
+        super.start();
+        createServicePool();
+    }
 
 }

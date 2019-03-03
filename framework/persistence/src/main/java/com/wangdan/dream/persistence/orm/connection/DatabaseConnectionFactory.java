@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 @PropertyFile("com.wangdan.dream.database.cfg")
-public class DatabaseConnectionFactory extends ServiceFactoryBase {
+public class DatabaseConnectionFactory<DataBaseServiceImpl> extends ServiceFactoryBase {
     private Connection connection;
 
     public DatabaseConnectionFactory(ServiceBase parent) {

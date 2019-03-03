@@ -3,17 +3,14 @@ package com.wangdan.dream.persistence.orm.table;
 
 import com.google.common.base.Joiner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 public class DynamicTableName extends TableName {
     private static String SEPERATE = "_";
-
-    public static String getTableName(String period, String tableName) {
-        if (period == null)
-            return tableName;
-        String suffix = calculateSuffix(period);
-        return tableName + suffix;
-    }
 
     private static String calculateSuffix(String period) {
         Calendar calendar = new GregorianCalendar();
@@ -39,5 +36,12 @@ public class DynamicTableName extends TableName {
         }
         Collections.reverse(numbers);
         return Joiner.on(SEPERATE).join(numbers);
+    }
+
+    public static String getTableName(String period, String tableName) {
+        if (period == null)
+            return tableName;
+        String suffix = calculateSuffix(period);
+        return tableName + suffix;
     }
 }

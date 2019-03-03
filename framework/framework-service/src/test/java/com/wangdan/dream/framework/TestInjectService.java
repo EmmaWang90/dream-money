@@ -10,10 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @PropertyFile("./src/test/resources/test.cfg")
 @InjectService(accessClass = HelpService.class, implementation = HelpService.class)
 public class TestInjectService extends ServiceBase {
-    @Service
-    private HelpService helpService;
     @Property("dream")
     private String dream;
+    @Service
+    private HelpService helpService;
 
     public TestInjectService() {
         super(null);

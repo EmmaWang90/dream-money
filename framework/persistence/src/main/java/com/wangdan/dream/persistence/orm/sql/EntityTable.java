@@ -12,18 +12,18 @@ public class EntityTable {
         this.tableName = tableName;
     }
 
-    public void setPeriod(String period) {
-        this.period = period;
+    public String getTableName() {
+        if (getNameFunction == null)
+            return tableName;
+        else
+            return getNameFunction.apply(period, tableName);
     }
 
     public void setGetNameFunction(BiFunction<String, String, String> getNameFunction) {
         this.getNameFunction = getNameFunction;
     }
 
-    public String getTableName() {
-        if (getNameFunction == null)
-            return tableName;
-        else
-            return getNameFunction.apply(period, tableName);
+    public void setPeriod(String period) {
+        this.period = period;
     }
 }

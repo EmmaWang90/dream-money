@@ -10,21 +10,22 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class EntityTableManager {
-    private Connection connection;
     private static Logger logger = LoggerFactory.getLogger(EntityTableManager.class);
+    private Connection connection;
+
     public EntityTableManager(Connection connection) {
         this.connection = connection;
     }
 
-    public void createTable(Class<?> clazz){
+    public void createTable(Class<?> clazz) {
         try {
-            Statement statement= connection.createStatement();
+            Statement statement = connection.createStatement();
             statement.execute(MySqlHelper.getCreate(clazz));
         } catch (SQLException e) {
         }
     }
 
-    public boolean isTableExist(Class<?> clazz){
+    public boolean isTableExist(Class<?> clazz) {
         try {
             Statement statement = connection.createStatement();
             statement.execute(MySqlHelper.isTableExist(clazz));

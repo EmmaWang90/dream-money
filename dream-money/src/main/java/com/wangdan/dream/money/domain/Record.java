@@ -8,16 +8,16 @@ import java.util.Date;
 @Table
 public class Record {
     @Column
-    private Long id;
+    private String category;
     @Column
-    private Date time;
+    private String comment;
+    @Column
+    private Long id;
     @Column
     private RecordType recordType;
     @Column
-    private String category;
-    @Column
     private String subclass;
     @Column
-    private String comment;
+    private Date time;
 
 }

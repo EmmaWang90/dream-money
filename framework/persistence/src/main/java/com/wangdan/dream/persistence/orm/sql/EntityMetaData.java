@@ -11,6 +11,13 @@ import java.util.List;
 
 public class EntityMetaData {
     private Class<?> entityClass;
+    private List<EntityField> entityFieldList = new ArrayList<>();
+    private EntityTable entityTable;
+    private List<EntityField> primaryFieldList = new ArrayList<>();
+
+    public EntityMetaData(Class<?> clazz) {
+        this.entityClass = clazz;
+    }
 
     public Class<?> getEntityClass() {
         return entityClass;
@@ -28,15 +35,8 @@ public class EntityMetaData {
         return primaryFieldList;
     }
 
-    private List<EntityField> entityFieldList = new ArrayList<>();
-    private EntityTable entityTable;
-    private List<EntityField> primaryFieldList = new ArrayList<>();
-
-    public String getTableName(){
+    public String getTableName() {
         return entityTable.getTableName();
-    }
-    public EntityMetaData(Class<?> clazz) {
-        this.entityClass = clazz;
     }
 
     public void initialize() {
@@ -47,9 +47,9 @@ public class EntityMetaData {
 
     private void initializeFields() {
         Field[] fields = entityClass.getDeclaredFields();
-        for (Field field : fields){
+        for (Field field : fields) {
             Column column = field.getDeclaredAnnotation(Column.class);
-            if (column != null){
+            if (column != null) {
                 EntityField entityField = new EntityField();
                 entityField.setFieldName(column.value().isEmpty() ? field.getName() : column.value());
                 entityField.setClazz(field.getType());

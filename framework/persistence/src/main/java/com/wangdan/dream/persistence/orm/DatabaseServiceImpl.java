@@ -15,13 +15,13 @@ public class DatabaseServiceImpl extends ServiceBase {
         super(parent);
     }
 
+    public EntityManager getEntityManager() {
+        return entityManager;
+    }
+
     @Override
     public void start() {
         super.start();
         entityManager = new EntityManagerImpl(databaseConnectionFactory.getConnection());
-    }
-
-    public EntityManager getEntityManager() {
-        return entityManager;
     }
 }

@@ -2,7 +2,11 @@ package com.wangdan.dream.persistence.orm.table;
 
 import com.google.common.base.Joiner;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 public class TableNameUtil {
     private static String SEPERATE = "_";
@@ -14,13 +18,6 @@ public class TableNameUtil {
 
     public static TableNameUtil getInstance() {
         return instance;
-    }
-
-    public String getTableName(String period, String tableName) {
-        if (period == null)
-            return tableName;
-        String suffix = calculateSuffix(period);
-        return tableName + suffix;
     }
 
     private String calculateSuffix(String period) {
@@ -47,5 +44,12 @@ public class TableNameUtil {
         }
         Collections.reverse(numbers);
         return Joiner.on(SEPERATE).join(numbers);
+    }
+
+    public String getTableName(String period, String tableName) {
+        if (period == null)
+            return tableName;
+        String suffix = calculateSuffix(period);
+        return tableName + suffix;
     }
 }

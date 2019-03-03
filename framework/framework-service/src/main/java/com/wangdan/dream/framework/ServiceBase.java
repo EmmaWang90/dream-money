@@ -8,24 +8,45 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class ServiceBase {
-    private Map<Class<? extends ServiceBase>, List<ServiceBase>> childrenServices = new HashMap<>();
     protected Logger logger = LoggerFactory.getLogger(getClass());
-    private ServiceBase parent;
     protected ServiceProperty serviceProperty = null;
+    private Map<Class<? extends ServiceBase>, List<ServiceBase>> childrenServices = new HashMap<>();
+    private ServiceBase parent;
 
     public ServiceBase(ServiceBase parent) {
         this.parent = parent;
     }
 
-    public void start() {
-        initialize();
-        inject();
-        for (Class<? extends ServiceBase> clazz : childrenServices.keySet())
-            for (ServiceBase serviceBase : childrenServices.get(clazz))
-                serviceBase.start();
+    public void addService(Class<? extends ServiceBase> clazz, ServiceBase instance) {
+        if (instance instanceof ServiceBase) {
+            if (childrenServices.containsKey(clazz) && childrenServices.get(clazz) != null)
+                childrenServices.get(clazz).add(instance);
+            else {
+                List<ServiceBase> serviceBaseList = new ArrayList<ServiceBase>();
+                serviceBaseList.add(instance);
+                childrenServices.put(clazz, serviceBaseList);
+            }
+        }
+    }
+
+    public List<ServiceBase> getService(Class<?> clazz) {
+        if (childrenServices.containsKey(clazz))
+            return childrenServices.get(clazz);
+        else {
+            Optional<Class<? extends ServiceBase>> targetClassOptional = childrenServices.keySet().stream().findFirst();
+            if (targetClassOptional.isPresent())
+                return childrenServices.get(targetClassOptional.get());
+            else
+                return null;
+        }
     }
 
     private void initialize() {
@@ -51,7 +72,7 @@ public class ServiceBase {
                 if (constructor.getParameterCount() == 1 && Arrays.equals(constructor.getParameterTypes(), new Class[]{ServiceBase.class})) {
                     try {
                         ServiceBase instance = (ServiceBase) constructor.newInstance(this);
-                        this.addService(injectService.value() != ServiceBase.class? injectService.value() : injectService.accessClass(), instance);
+                        this.addService(injectService.value() != ServiceBase.class ? injectService.value() : injectService.accessClass(), instance);
                     } catch (Exception e) {
                         logger.error("failed to create instance for {}", implementationClass, e);
                     }
@@ -111,28 +132,12 @@ public class ServiceBase {
         }
     }
 
-    public void addService(Class<? extends ServiceBase> clazz, ServiceBase instance) {
-        if (instance instanceof ServiceBase) {
-            if (childrenServices.containsKey(clazz) && childrenServices.get(clazz) != null)
-                childrenServices.get(clazz).add(instance);
-            else {
-                List<ServiceBase> serviceBaseList = new ArrayList<ServiceBase>();
-                serviceBaseList.add(instance);
-                childrenServices.put(clazz, serviceBaseList);
-            }
-        }
-    }
-
-    public List<ServiceBase> getService(Class<?> clazz) {
-        if (childrenServices.containsKey(clazz))
-            return childrenServices.get(clazz);
-        else {
-            Optional<Class<? extends ServiceBase>> targetClassOptional = childrenServices.keySet().stream().findFirst();
-            if (targetClassOptional.isPresent())
-                return childrenServices.get(targetClassOptional.get());
-            else
-                return null;
-        }
+    public void start() {
+        initialize();
+        inject();
+        for (Class<? extends ServiceBase> clazz : childrenServices.keySet())
+            for (ServiceBase serviceBase : childrenServices.get(clazz))
+                serviceBase.start();
     }
 
 }

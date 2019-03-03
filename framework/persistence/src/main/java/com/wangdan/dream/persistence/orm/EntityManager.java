@@ -6,9 +6,9 @@ import java.sql.Connection;
 
 public interface EntityManager<T> {
 
-    void setConnection(Connection connection);
+    EntityTableManager getEntityTableManager();
 
     boolean save(T entity);
 
-    EntityTableManager getEntityTableManager();
+    void setConnection(Connection connection);
 }

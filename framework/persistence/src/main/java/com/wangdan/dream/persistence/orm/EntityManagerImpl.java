@@ -6,11 +6,6 @@ import java.sql.Connection;
 
 public class EntityManagerImpl implements EntityManager {
     private Connection connection;
-
-    public EntityTableManager getEntityTableManager() {
-        return entityTableManager;
-    }
-
     private EntityTableManager entityTableManager;
 
     public EntityManagerImpl(Connection connection) {
@@ -18,12 +13,16 @@ public class EntityManagerImpl implements EntityManager {
         entityTableManager = new EntityTableManager(connection);
     }
 
-    @Override
-    public void setConnection(Connection connection) {
-        this.connection = connection;
+    public EntityTableManager getEntityTableManager() {
+        return entityTableManager;
     }
 
     public boolean save(Object entity) {
         return false;
+    }
+
+    @Override
+    public void setConnection(Connection connection) {
+        this.connection = connection;
     }
 }
