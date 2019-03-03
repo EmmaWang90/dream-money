@@ -41,11 +41,15 @@ public class ServiceBase {
         if (childrenServices.containsKey(clazz))
             return childrenServices.get(clazz);
         else {
-            Optional<Class<? extends ServiceBase>> targetClassOptional = childrenServices.keySet().stream().findFirst();
-            if (targetClassOptional.isPresent())
-                return childrenServices.get(targetClassOptional.get());
-            else
-                return null;
+            Optional optional = childrenServices.keySet().stream().filter(tempClass -> tempClass.isAssignableFrom(clazz)).findFirst();
+            if (optional.isPresent()) {
+                return childrenServices.get(optional.get());
+            } else {
+                if (parent != null)
+                    return parent.getService(clazz);
+                else
+                    return null;
+            }
         }
     }
 
@@ -119,7 +123,7 @@ public class ServiceBase {
         for (Field field : fields) {
             Service service = field.getAnnotation(Service.class);
             if (service != null) {
-                List<ServiceBase> serviceBaseList = getService(field.getDeclaringClass());
+                List<ServiceBase> serviceBaseList = getService(field.getType());
                 if (serviceBaseList != null) {
                     field.setAccessible(true);
                     try {
@@ -128,6 +132,11 @@ public class ServiceBase {
                         logger.error("failed to inject {}", field.getName(), e);
                     }
                 }
+            }
+        }
+        for (Class<? extends ServiceBase> serviceClass : this.childrenServices.keySet()) {
+            for (ServiceBase serviceBase : this.childrenServices.get(serviceClass)) {
+                serviceBase.injectService();
             }
         }
     }

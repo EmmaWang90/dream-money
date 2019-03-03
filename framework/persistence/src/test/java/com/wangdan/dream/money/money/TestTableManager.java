@@ -4,19 +4,19 @@ import com.wangdan.dream.framework.InjectService;
 import com.wangdan.dream.framework.Service;
 import com.wangdan.dream.framework.test.ServiceTestBase;
 import com.wangdan.dream.money.Person;
-import com.wangdan.dream.persistence.orm.DatabaseServiceImpl;
-import com.wangdan.dream.persistence.orm.EntityManager;
-import com.wangdan.dream.persistence.orm.table.EntityTableManager;
+import com.wangdan.dream.persistence.orm.DataBaseType;
+import com.wangdan.dream.persistence.orm.impl.EntityTableManagerImpl;
+import com.wangdan.dream.persistence.orm.impl.connection.DatabaseConnectionFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-@InjectService(DatabaseServiceImpl.class)
+@InjectService(DatabaseConnectionFactory.class)
+@InjectService(EntityTableManagerImpl.class)
 public class TestTableManager extends ServiceTestBase {
     @Service
-    private DatabaseServiceImpl databaseService = null;
-    private EntityManager entityManager = null;
+    private DatabaseConnectionFactory databaseConnectionFactory = null;
+    @Service
+    private EntityTableManagerImpl entityTableManager;
 
     public TestTableManager() {
         super(null);
@@ -26,13 +26,10 @@ public class TestTableManager extends ServiceTestBase {
     @Override
     public void start() {
         super.start();
-        entityManager = databaseService.getEntityManager();
     }
 
     @Test
     public void testCreateTable() {
-        EntityTableManager entityTableManager = entityManager.getEntityTableManager();
-        entityTableManager.createTable(Person.class);
-        assertTrue(entityTableManager.isTableExist(Person.class));
+        entityTableManager.createTable(DataBaseType.POSTGRESQL, Person.class);
     }
 }

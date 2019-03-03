@@ -21,7 +21,7 @@ abstract public class ServiceFactoryBase<T> extends ServiceBase {
             while (servicePropertyKeys.hasMoreElements()) {
                 String key = (String) servicePropertyKeys.nextElement();
                 if (key.contains(".")) {
-                    String[] keyArray = key.split(".");
+                    String[] keyArray = key.split("\\.");
                     if (!servicePropertyMap.containsKey(keyArray[0]))
                         servicePropertyMap.put(keyArray[0], new Properties());
                     servicePropertyMap.get(keyArray[0]).put(keyArray[1], serviceProperty.getString(key));
@@ -32,6 +32,10 @@ abstract public class ServiceFactoryBase<T> extends ServiceBase {
             T service = createService(serviceName, servicePropertyMap.get(serviceName));
             serviceMap.put(serviceName, service);
         }
+    }
+
+    public T getService(String serviceName) {
+        return serviceMap.get(serviceName);
     }
 
     @Override
