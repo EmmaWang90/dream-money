@@ -1,0 +1,5 @@
+com\wangdan\dream\commons\serviceProperties\ServiceProperty.class
+com\wangdan\dream\commons\serviceProperties\Environment.class
+com\wangdan\dream\commons\serviceProperties\PropertyFile.class
+com\wangdan\dream\commons\serviceProperties\ServicePropertiesUtil.class
+com\wangdan\dream\commons\serviceProperties\Property.class

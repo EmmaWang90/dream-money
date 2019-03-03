@@ -1,0 +1,5 @@
+com\wangdan\dream\framework\Service.class
+com\wangdan\dream\framework\InjectService.class
+com\wangdan\dream\framework\ServiceBase.class
+com\wangdan\dream\framework\InjectServices.class
+com\wangdan\dream\framework\test\ServiceTestBase.class

@@ -10,6 +10,4 @@ public class AccountBase {
     private Integer id;
     @Column
     private String name;
-    @Column
-    private Integer total;
 }

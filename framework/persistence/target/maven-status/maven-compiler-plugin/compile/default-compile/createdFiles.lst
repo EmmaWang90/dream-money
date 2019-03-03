@@ -1,0 +1,15 @@
+com\wangdan\dream\persistence\orm\sql\EntityField.class
+com\wangdan\dream\persistence\orm\table\EntityTableManager.class
+com\wangdan\dream\persistence\orm\sql\EntityMetaData.class
+com\wangdan\dream\persistence\orm\sql\EntityTable.class
+com\wangdan\dream\persistence\orm\table\TableName.class
+com\wangdan\dream\persistence\orm\sql\MySqlHelper.class
+com\wangdan\dream\persistence\orm\EntityManager.class
+com\wangdan\dream\persistence\orm\annotations\Column.class
+com\wangdan\dream\persistence\orm\sql\EntityMetaDataHelper.class
+com\wangdan\dream\persistence\orm\annotations\Table.class
+com\wangdan\dream\persistence\orm\table\DynamicTableName.class
+com\wangdan\dream\persistence\orm\connection\DatabaseConnectionFactory.class
+com\wangdan\dream\persistence\orm\DatabaseServiceImpl.class
+com\wangdan\dream\persistence\orm\EntityManagerImpl.class
+com\wangdan\dream\persistence\orm\table\TableNameUtil.class
