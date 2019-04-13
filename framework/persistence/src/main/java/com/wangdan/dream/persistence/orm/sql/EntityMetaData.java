@@ -9,13 +9,15 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntityMetaData {
-    private Class<?> entityClass;
+import static java.util.stream.Collectors.toList;
+
+public class EntityMetaData<T> {
+    private Class<T> entityClass;
     private List<EntityField> entityFieldList = new ArrayList<>();
     private EntityTable entityTable;
     private List<EntityField> primaryFieldList = new ArrayList<>();
 
-    public EntityMetaData(Class<?> clazz) {
+    public EntityMetaData(Class<T> clazz) {
         this.entityClass = clazz;
     }
 
@@ -27,6 +29,10 @@ public class EntityMetaData {
         return entityFieldList;
     }
 
+    public List<String> getEntityFieldStringList() {
+        return entityFieldList.stream().map(EntityField::getCreateFieldString).collect(toList());
+    }
+
     public EntityTable getEntityTable() {
         return entityTable;
     }
@@ -36,7 +42,7 @@ public class EntityMetaData {
     }
 
     public String getTableName() {
-        return entityTable.getTableName();
+        return entityTable.getTableName().toLowerCase();
     }
 
     public void initialize() {
@@ -69,5 +75,9 @@ public class EntityMetaData {
         entityTable = new EntityTable(tableName);
         if (tableNameClass.equals(DynamicTableName.class))
             entityTable.setGetNameFunction((period, name) -> TableNameUtil.getInstance().getTableName(period, name));
+    }
+
+    public T newInstance() throws IllegalAccessException, InstantiationException {
+        return entityClass.newInstance();
     }
 }

@@ -6,4 +6,6 @@ public interface EntityTableManager {
     void createTable(DataBaseType dataBaseType, Class<?> entityClass);
 
     void dropTable(DataBaseType dataBaseType, Class<?> entityClass);
+
+    <T> boolean exist(DataBaseType dataBaseType, Class<T> entityClass);
 }

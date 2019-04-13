@@ -10,6 +10,9 @@ import com.wangdan.dream.persistence.orm.impl.connection.DatabaseConnectionFacto
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
 @InjectService(DatabaseConnectionFactory.class)
 @InjectService(EntityTableManagerImpl.class)
 public class TestTableManager extends ServiceTestBase {
@@ -30,6 +33,14 @@ public class TestTableManager extends ServiceTestBase {
 
     @Test
     public void testCreateTable() {
+        entityTableManager.dropTable(DataBaseType.POSTGRESQL, Person.class);
+        boolean isExist = entityTableManager.exist(DataBaseType.POSTGRESQL, Person.class);
+        assertFalse(isExist);
         entityTableManager.createTable(DataBaseType.POSTGRESQL, Person.class);
+        isExist = entityTableManager.exist(DataBaseType.POSTGRESQL, Person.class);
+        assertTrue(isExist);
+        entityTableManager.dropTable(DataBaseType.POSTGRESQL, Person.class);
+        isExist = entityTableManager.exist(DataBaseType.POSTGRESQL, Person.class);
+        assertFalse(isExist);
     }
 }

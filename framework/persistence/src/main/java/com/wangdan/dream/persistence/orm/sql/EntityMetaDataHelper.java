@@ -10,9 +10,9 @@ public class EntityMetaDataHelper {
 
     }
 
-    public static EntityMetaData getEntityMetaData(Class<?> clazz) {
+    public static <T> EntityMetaData<T> getEntityMetaData(Class<T> clazz) {
         if (!entityMetaDataMap.containsKey(clazz)) {
-            EntityMetaData entityMetaData = new EntityMetaData(clazz);
+            EntityMetaData<T> entityMetaData = new EntityMetaData<T>(clazz);
             entityMetaData.initialize();
             entityMetaDataMap.put(clazz, entityMetaData);
         }

@@ -1,5 +1,7 @@
 package com.wangdan.dream.persistence.orm.sql;
 
+import com.wangdan.dream.commons.serviceProperties.BeanUtils;
+import com.wangdan.dream.commons.serviceProperties.ValueUtils;
 import com.wangdan.dream.persistence.orm.annotations.Column;
 
 import java.lang.reflect.Field;
@@ -69,5 +71,10 @@ public class EntityField {
 
     public String getFieldString() {
         return fieldName + " " + getFieldParameter();
+    }
+
+    public void setInstanceFieldValue(Object instance, String columnContent) throws NoSuchFieldException, IllegalAccessException {
+        Object fieldValue = ValueUtils.convertValue(clazz, columnContent);
+        BeanUtils.setFiled(instance, fieldName, fieldValue);
     }
 }
