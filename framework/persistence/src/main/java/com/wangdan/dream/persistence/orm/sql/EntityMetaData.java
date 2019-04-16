@@ -33,6 +33,10 @@ public class EntityMetaData<T> {
         return entityFieldList.stream().map(EntityField::getCreateFieldString).collect(toList());
     }
 
+    public List<String> getColumnNameList() {
+        return entityFieldList.stream().map(EntityField::getFieldName).collect(toList());
+    }
+
     public EntityTable getEntityTable() {
         return entityTable;
     }

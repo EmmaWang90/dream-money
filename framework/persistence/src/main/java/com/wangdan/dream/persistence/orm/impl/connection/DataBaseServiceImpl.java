@@ -15,6 +15,11 @@ import java.util.List;
 
 public class DataBaseServiceImpl {
     private static final Logger logger = LoggerFactory.getLogger(DataBaseServiceImpl.class);
+
+    public Connection getConnection() {
+        return connection;
+    }
+
     private Connection connection;
     private DataBaseType dataBaseType;
 

@@ -8,4 +8,5 @@ public interface EntityTableManager {
     void dropTable(DataBaseType dataBaseType, Class<?> entityClass);
 
     <T> boolean exist(DataBaseType dataBaseType, Class<T> entityClass);
+
 }

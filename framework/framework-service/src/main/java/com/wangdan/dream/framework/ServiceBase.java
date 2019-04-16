@@ -18,14 +18,14 @@ import java.util.Optional;
 public class ServiceBase {
     protected Logger logger = LoggerFactory.getLogger(getClass());
     protected ServiceProperty serviceProperty = null;
-    private Map<Class<? extends ServiceBase>, List<ServiceBase>> childrenServices = new HashMap<>();
+    private Map<Class<?>, List<ServiceBase>> childrenServices = new HashMap<>();
     private ServiceBase parent;
 
     public ServiceBase(ServiceBase parent) {
         this.parent = parent;
     }
 
-    public void addService(Class<? extends ServiceBase> clazz, ServiceBase instance) {
+    public void addService(Class<?> clazz, ServiceBase instance) {
         if (instance instanceof ServiceBase) {
             if (childrenServices.containsKey(clazz) && childrenServices.get(clazz) != null)
                 childrenServices.get(clazz).add(instance);
@@ -76,7 +76,7 @@ public class ServiceBase {
                 if (constructor.getParameterCount() == 1 && Arrays.equals(constructor.getParameterTypes(), new Class[]{ServiceBase.class})) {
                     try {
                         ServiceBase instance = (ServiceBase) constructor.newInstance(this);
-                        this.addService(injectService.value() != ServiceBase.class ? injectService.value() : injectService.accessClass(), instance);
+                        this.addService(injectService.accessClass() != null ? injectService.accessClass() : injectService.value(), instance);
                     } catch (Exception e) {
                         logger.error("failed to create instance for {}", implementationClass, e);
                     }
@@ -134,7 +134,7 @@ public class ServiceBase {
                 }
             }
         }
-        for (Class<? extends ServiceBase> serviceClass : this.childrenServices.keySet()) {
+        for (Class<?> serviceClass : this.childrenServices.keySet()) {
             for (ServiceBase serviceBase : this.childrenServices.get(serviceClass)) {
                 serviceBase.injectService();
             }
@@ -144,7 +144,7 @@ public class ServiceBase {
     public void start() {
         initialize();
         inject();
-        for (Class<? extends ServiceBase> clazz : childrenServices.keySet())
+        for (Class<?> clazz : childrenServices.keySet())
             for (ServiceBase serviceBase : childrenServices.get(clazz))
                 serviceBase.start();
     }
