@@ -19,9 +19,6 @@ public class TestEntityManager extends ServiceTestBase {
     private DatabaseConnectionFactory databaseConnectionFactory;
     @Service
     private EntityManager entityManager;
-    @Service
-    private EntityManagerImpl entityManagerImpl;
-
     @Test
     public void test() throws SQLException {
         Person person = new Person();
@@ -29,16 +26,7 @@ public class TestEntityManager extends ServiceTestBase {
         person.setName("aa");
         person.setMoney(5.0);
         entityManager.save(person);
+        entityManager.save(person);
         entityManager.query(Person.class, new Condition());
-//        String sql = SqlHelper.getSave(Person.class);
-//        logger.info(sql);
-//        DataBaseServiceImpl dataBaseService = databaseConnectionFactory.getService(DataBaseType.POSTGRESQL);
-//        Connection connection = dataBaseService.getConnection();
-//        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-//        preparedStatement.setDate(1, new Date(0));
-//        preparedStatement.setInt(2, person.getId());
-//        preparedStatement.setDouble(3, person.getMoney());
-//        preparedStatement.setString(4, person.getName());
-//        preparedStatement.execute();
     }
 }

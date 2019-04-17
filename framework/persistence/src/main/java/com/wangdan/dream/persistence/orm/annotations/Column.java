@@ -12,6 +12,8 @@ public @interface Column {
 
     boolean isPrimaryKey() default false;
 
+    boolean autoIncremental() default false;
+
     boolean notNull() default false;
 
     boolean unsigned() default false;

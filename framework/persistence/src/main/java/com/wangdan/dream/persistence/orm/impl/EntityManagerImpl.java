@@ -20,6 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.List;
+import java.util.Map;
 
 @InjectService(accessClass = EntityTableManager.class, value = EntityTableManagerImpl.class)
 public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T> {
@@ -73,15 +74,16 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
         Class<T> entityClass = (Class<T>) entityArray[0].getClass();
         if (!entityTableManager.exist(getDataBaseType(), entityClass))
             entityTableManager.createTable(getDataBaseType(), entityClass);
-        String sql = SqlHelper.getSave(entityClass);
+        String sql = SqlHelper.getSave(getDataBaseType(), entityClass);
         DataBaseServiceImpl dataBaseService = this.databaseConnectionFactory.getService(getDataBaseType());
         Connection connection = dataBaseService.getConnection();
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            Map<String, EntityField> entityFieldMap = EntityMetaDataHelper.getEntityMetaData(entityClass).getEntityFieldMap();
+            List<String> columnNameList = EntityMetaDataHelper.getEntityMetaData(entityClass).getColumnNameList();
             for (T entity : entityArray) {
-                List<EntityField> entityFieldList = EntityMetaDataHelper.getEntityMetaData(entityClass).getEntityFieldList();
-                for (int i = 0; i < entityFieldList.size(); i++) {
-                    EntityField entityField = entityFieldList.get(i);
+                for (int i = 0; i < columnNameList.size(); i++) {
+                    EntityField entityField = entityFieldMap.get(columnNameList.get(i));
                     Object fieldValue = BeanUtils.getField(entity, entityField.getFieldName());
                     setPreparedStatementParameter(entityField, fieldValue, preparedStatement, i);
                 }

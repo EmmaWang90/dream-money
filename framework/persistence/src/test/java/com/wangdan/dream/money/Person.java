@@ -9,7 +9,7 @@ import java.util.Date;
 public class Person {
     @Column
     private Date birthday;
-    @Column
+    @Column(isPrimaryKey = true, autoIncremental = true)
     private Integer id;
     @Column
     private Double money;

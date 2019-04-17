@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DataBaseServiceImpl {
     private static final Logger logger = LoggerFactory.getLogger(DataBaseServiceImpl.class);
@@ -29,10 +30,12 @@ public class DataBaseServiceImpl {
     }
 
 
-    public void commit(String sql) {
+    public void commit(String... sql) {
         try {
             Statement statement = this.connection.createStatement();
-            statement.executeUpdate(sql);
+            for (String string : sql)
+                if (string != null && !string.trim().isEmpty())
+                    statement.executeUpdate(string);
             statement.close();
         } catch (SQLException e) {
             logger.error(e.getMessage());
@@ -59,10 +62,10 @@ public class DataBaseServiceImpl {
             Statement statement = this.connection.createStatement();
             statement.executeUpdate(sql);
             ResultSet resultSet = statement.getResultSet();
-            List<EntityField> entityFieldList = entityMetaData.getEntityFieldList();
+            Map<String, EntityField> entityFieldMap = entityMetaData.getEntityFieldMap();
             while (resultSet.next()) {
                 T instance = entityMetaData.newInstance();
-                for (EntityField entityField : entityFieldList) {
+                for (EntityField entityField : entityFieldMap.values()) {
                     String columnContent = resultSet.getString(entityField.getFieldName());
                     entityField.setInstanceFieldValue(instance, columnContent);
                 }

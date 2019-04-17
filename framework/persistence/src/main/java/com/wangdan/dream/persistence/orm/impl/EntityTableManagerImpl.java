@@ -24,7 +24,7 @@ public class EntityTableManagerImpl extends ServiceBase implements EntityTableMa
 
     @Override
     public void createTable(DataBaseType dataBaseType, Class<?> entityClass) {
-        String createSql = SqlHelper.getCreate(dataBaseType, entityClass);
+        String[] createSql = SqlHelper.getCreate(dataBaseType, entityClass);
         this.databaseConnectionFactory.getService(dataBaseType).commit(createSql);
     }
 

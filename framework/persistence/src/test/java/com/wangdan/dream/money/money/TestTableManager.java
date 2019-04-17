@@ -4,6 +4,7 @@ import com.wangdan.dream.framework.InjectService;
 import com.wangdan.dream.framework.Service;
 import com.wangdan.dream.framework.test.ServiceTestBase;
 import com.wangdan.dream.money.Person;
+import com.wangdan.dream.money.Phone;
 import com.wangdan.dream.persistence.orm.DataBaseType;
 import com.wangdan.dream.persistence.orm.EntityTableManager;
 import com.wangdan.dream.persistence.orm.impl.EntityTableManagerImpl;
@@ -23,7 +24,12 @@ public class TestTableManager extends ServiceTestBase {
 
     @Test
     public void testCreateTable() {
-        Class entityClass = Person.class;
+        testTableManager(Person.class);
+        testTableManager(Phone.class);
+
+    }
+
+    private void testTableManager(Class<?> entityClass) {
         entityTableManager.dropTable(DataBaseType.POSTGRESQL, entityClass);
         boolean isExist = entityTableManager.exist(DataBaseType.POSTGRESQL, entityClass);
         assertFalse(isExist);

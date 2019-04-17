@@ -53,7 +53,7 @@ public class ServiceBase {
         }
     }
 
-    private void initialize() {
+    public void initialize() {
         initializeService();
         initializeProperties();
     }

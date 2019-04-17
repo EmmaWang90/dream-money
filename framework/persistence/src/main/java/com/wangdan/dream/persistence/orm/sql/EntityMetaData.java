@@ -1,21 +1,32 @@
 package com.wangdan.dream.persistence.orm.sql;
 
 import com.wangdan.dream.persistence.orm.annotations.Column;
+import com.wangdan.dream.persistence.orm.annotations.Index;
+import com.wangdan.dream.persistence.orm.annotations.IndexList;
 import com.wangdan.dream.persistence.orm.annotations.Table;
 import com.wangdan.dream.persistence.orm.table.DynamicTableName;
 import com.wangdan.dream.persistence.orm.table.TableNameUtil;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
 public class EntityMetaData<T> {
     private Class<T> entityClass;
-    private List<EntityField> entityFieldList = new ArrayList<>();
+    private List<String> columnNameList = new ArrayList<>();
     private EntityTable entityTable;
-    private List<EntityField> primaryFieldList = new ArrayList<>();
+    private Map<String, EntityField> entityFieldMap = new HashMap<>();
+    private List<String> indexStringList = null;
+    private Map<String, EntityField> primaryFieldMap = new HashMap<>();
+
+    public List<String> getColumnNameList() {
+        return columnNameList;
+    }
 
     public EntityMetaData(Class<T> clazz) {
         this.entityClass = clazz;
@@ -25,24 +36,16 @@ public class EntityMetaData<T> {
         return entityClass;
     }
 
-    public List<EntityField> getEntityFieldList() {
-        return entityFieldList;
+    public Map<String, EntityField> getEntityFieldMap() {
+        return entityFieldMap;
     }
 
     public List<String> getEntityFieldStringList() {
-        return entityFieldList.stream().map(EntityField::getCreateFieldString).collect(toList());
+        return entityFieldMap.values().stream().map(EntityField::getCreateFieldString).collect(toList());
     }
 
-    public List<String> getColumnNameList() {
-        return entityFieldList.stream().map(EntityField::getFieldName).collect(toList());
-    }
-
-    public EntityTable getEntityTable() {
-        return entityTable;
-    }
-
-    public List<EntityField> getPrimaryFieldList() {
-        return primaryFieldList;
+    public List<String> getIndexStringList() {
+        return indexStringList;
     }
 
     public String getTableName() {
@@ -52,7 +55,7 @@ public class EntityMetaData<T> {
     public void initialize() {
         initializeTable();
         initializeFields();
-
+        initializeIndexList();
     }
 
     private void initializeFields() {
@@ -65,11 +68,25 @@ public class EntityMetaData<T> {
                 entityField.setClazz(field.getType());
                 entityField.setField(field);
                 entityField.setColumn(column);
-                entityFieldList.add(entityField);
+                entityFieldMap.put(entityField.getFieldName(), entityField);
+                columnNameList.add(entityField.getFieldName());
                 if (column.isPrimaryKey())
-                    primaryFieldList.add(entityField);
+                    primaryFieldMap.put(entityField.getFieldName(), entityField);
             }
         }
+    }
+
+    private void initializeIndexList() {
+        List<String> indexStringList = new ArrayList<>();
+        IndexList indexList = entityClass.getAnnotation(IndexList.class);
+        if (indexList != null && indexList.value() != null)
+            indexStringList.addAll(Arrays.<String>asList(indexList.value()));
+        for (Field field : entityClass.getDeclaredFields()) {
+            Index index = field.getDeclaredAnnotation(Index.class);
+            if (index != null && index.value() != null)
+                indexStringList.add(index.value());
+        }
+
     }
 
     private void initializeTable() {

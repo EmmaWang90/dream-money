@@ -31,12 +31,18 @@ public class EntityField {
 
     public String getCreateFieldString() {
         StringBuilder stringBuilder = new StringBuilder(getFieldString());
+        if (column.autoIncremental()) {
+            stringBuilder.replace(0, stringBuilder.length() - 1, "");
+            stringBuilder.append(getFieldName());
+            stringBuilder.append(" serial ");
+        }
         if (column.isPrimaryKey())
             stringBuilder.append(" primary key");
         if (column.notNull())
             stringBuilder.append(" not null");
         if (column.unsigned())
             stringBuilder.append(" unsigned");
+
         return stringBuilder.toString();
     }
 
