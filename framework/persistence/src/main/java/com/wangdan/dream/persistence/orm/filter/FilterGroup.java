@@ -23,4 +23,13 @@ public class FilterGroup {
         }
         return result;
     }
+
+    public String toSql() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (FilterExpress filterExpress : filterExpressList) {
+            stringBuilder.append(" ");
+            stringBuilder.append(filterExpress.toSql());
+        }
+        return stringBuilder.toString();
+    }
 }

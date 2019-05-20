@@ -62,6 +62,7 @@ public class EntityMetaData<T> {
         Field[] fields = entityClass.getDeclaredFields();
         for (Field field : fields) {
             Column column = field.getDeclaredAnnotation(Column.class);
+            field.setAccessible(true);
             if (column != null) {
                 EntityField entityField = new EntityField();
                 entityField.setFieldName(column.value().isEmpty() ? field.getName() : column.value());

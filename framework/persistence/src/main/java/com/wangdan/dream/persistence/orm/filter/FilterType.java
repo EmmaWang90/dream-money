@@ -1,7 +1,7 @@
 package com.wangdan.dream.persistence.orm.filter;
 
 public enum FilterType {
-    EQUAL {
+    EQUAL("=") {
         @Override
         public boolean check(Object fieldValue, Object validValue) {
             if (fieldValue == null && validValue == null)
@@ -11,37 +11,42 @@ public enum FilterType {
             else
                 return fieldValue.equals(validValue);
         }
-    }, LARGER_THAN {
+    }, LARGER_THAN(">") {
         @Override
         public boolean check(Object fieldValue, Object validValue) {
             return false;
         }
-    }, LESS_THAN {
+    }, LESS_THAN("<") {
         @Override
         public boolean check(Object fieldValue, Object validValue) {
             return false;
         }
-    }, LARGER_OR_EQUAL {
+    }, LARGER_OR_EQUAL(">=") {
         @Override
         public boolean check(Object fieldValue, Object validValue) {
             return false;
         }
-    }, LESS_OR_EQUAL {
+    }, LESS_OR_EQUAL("<=") {
         @Override
         public boolean check(Object fieldValue, Object validValue) {
             return false;
         }
-    }, NOT_EQUAL {
+    }, NOT_EQUAL("!=") {
         @Override
         public boolean check(Object fieldValue, Object validValue) {
             return false;
         }
-    }, LIKE {
+    }, LIKE("like ") {
         @Override
         public boolean check(Object fieldValue, Object validValue) {
             return false;
         }
     };
+    private String value;
 
+    private FilterType(String value) {
+        this.value = value;
+    }
     public abstract boolean check(Object fieldValue, Object validValue);
+
 }

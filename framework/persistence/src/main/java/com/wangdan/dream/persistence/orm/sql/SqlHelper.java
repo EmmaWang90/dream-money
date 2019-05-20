@@ -2,6 +2,7 @@ package com.wangdan.dream.persistence.orm.sql;
 
 import com.google.common.base.Joiner;
 import com.wangdan.dream.persistence.orm.DataBaseType;
+import com.wangdan.dream.persistence.orm.filter.Condition;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,24 @@ public class SqlHelper {
         String createTableSql = getCreate(clazz);
         String createIndexSql = databaseSqlHelperMap.get(dataBaseType).getCreateIndex(clazz);
         return new String[]{createTableSql, createIndexSql};
+    }
+
+    public static String getQuery(DataBaseType dataBaseType, Class entityClass, Condition condition) {
+        EntityMetaData<?> entityMetaData = EntityMetaDataHelper.getEntityMetaData(entityClass);
+        StringBuilder stringBuilder = new StringBuilder("SELECT * from ");
+        stringBuilder.append(entityMetaData.getTableName());
+        if (condition.getFilterGroup() != null) {
+            stringBuilder.append(" where ");
+            stringBuilder.append(condition.getFilterGroup().toSql());
+        }
+        if (condition.getOrder() != null) {
+            //TODO
+        }
+        if (condition.getRange() != null) {
+            //TODO
+        }
+
+        return stringBuilder.toString();
     }
 
     public static String getTruncate(DataBaseType dataBaseType, Class<?> clazz) {

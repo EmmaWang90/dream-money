@@ -11,14 +11,18 @@ import com.wangdan.dream.persistence.orm.filter.Condition;
 import com.wangdan.dream.persistence.orm.impl.connection.DataBaseServiceImpl;
 import com.wangdan.dream.persistence.orm.impl.connection.DatabaseConnectionFactory;
 import com.wangdan.dream.persistence.orm.sql.EntityField;
+import com.wangdan.dream.persistence.orm.sql.EntityMetaData;
 import com.wangdan.dream.persistence.orm.sql.EntityMetaDataHelper;
 import com.wangdan.dream.persistence.orm.sql.SqlHelper;
 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,8 +68,32 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
     }
 
     @Override
-    public List query(Class aClass, Condition condition) {
-        return null;
+    public List query(Class<T> entityClass, Condition condition) {
+        if (entityClass == null)
+            return null;
+        if (!entityTableManager.exist(getDataBaseType(), entityClass))
+            entityTableManager.createTable(getDataBaseType(), entityClass);
+        String sql = SqlHelper.getQuery(getDataBaseType(), entityClass, condition);
+        DataBaseServiceImpl dataBaseService = this.databaseConnectionFactory.getService(getDataBaseType());
+        Connection connection = dataBaseService.getConnection();
+        List<T> result = new ArrayList<>();
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            EntityMetaData<T> entityMetaData = EntityMetaDataHelper.getEntityMetaData(entityClass);
+            Map<String, EntityField> entityFieldMap = entityMetaData.getEntityFieldMap();
+            while (resultSet.next()) {
+                T instance = entityClass.newInstance();
+                for (EntityField entityField : entityFieldMap.values()) {
+                    Object object = readFromResultSet(entityField, resultSet);
+                    entityField.getField().set(instance, object);
+                }
+                result.add(instance);
+            }
+        } catch (Exception e) {
+            logger.error("failed to query for " + entityClass, condition, e);
+        }
+        return result;
     }
 
     public <T> boolean save(T... entityArray) {
@@ -123,7 +151,6 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
             }
             case "Date": {
                 Date date = (Date) fieldValue;
-
                 preparedStatement.setDate(i + 1, date);
                 break;
             }
@@ -136,5 +163,39 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
                 throw new IllegalArgumentException("failed to process " + entityField.getClazz().getSimpleName());
 
         }
+    }
+
+    private Object readFromResultSet(EntityField entityField, ResultSet resultSet) throws SQLException {
+        Object value = null;
+        String fieldName = entityField.getFieldName();
+        switch (entityField.getClazz().getSimpleName()) {
+            case "Integer": {
+                value = resultSet.getInt(fieldName);
+                break;
+            }
+            case "Double": {
+                value = resultSet.getDouble(fieldName);
+                break;
+            }
+            case "String": {
+                value = resultSet.getString(fieldName);
+                break;
+            }
+            case "Date": {
+                Date date = resultSet.getDate(fieldName);
+                if (date != null)
+                    value = new Date(date.getTime());
+                else
+                    value = null;
+                break;
+            }
+            case "Long": {
+                value = resultSet.getLong(fieldName);
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("failed to process " + entityField.getClazz().getSimpleName());
+        }
+        return value;
     }
 }

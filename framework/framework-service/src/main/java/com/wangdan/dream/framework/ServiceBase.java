@@ -37,7 +37,15 @@ public class ServiceBase {
         }
     }
 
-    public List<ServiceBase> getService(Class<?> clazz) {
+    public ServiceBase getService(Class<?> clazz) {
+        List<ServiceBase> serviceBaseList = getServices(clazz);
+        if (serviceBaseList != null && serviceBaseList.size() >= 1)
+            return serviceBaseList.iterator().next();
+        else
+            return null;
+    }
+
+    public List<ServiceBase> getServices(Class<?> clazz) {
         if (childrenServices.containsKey(clazz))
             return childrenServices.get(clazz);
         else {
@@ -46,7 +54,7 @@ public class ServiceBase {
                 return childrenServices.get(optional.get());
             } else {
                 if (parent != null)
-                    return parent.getService(clazz);
+                    return parent.getServices(clazz);
                 else
                     return null;
             }
@@ -123,7 +131,7 @@ public class ServiceBase {
         for (Field field : fields) {
             Service service = field.getAnnotation(Service.class);
             if (service != null) {
-                List<ServiceBase> serviceBaseList = getService(field.getType());
+                List<ServiceBase> serviceBaseList = getServices(field.getType());
                 if (serviceBaseList != null) {
                     field.setAccessible(true);
                     try {

@@ -19,7 +19,8 @@ public class EntityTableManagerImpl extends ServiceBase implements EntityTableMa
 
     @Override
     public void clearTable(DataBaseType dataBaseType, Class<?> entityClass) {
-
+        String truncateSql = SqlHelper.getTruncate(dataBaseType, entityClass);
+        this.databaseConnectionFactory.getService(dataBaseType).commit(truncateSql);
     }
 
     @Override
