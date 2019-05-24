@@ -22,6 +22,11 @@ public class EntityMetaData<T> {
     private EntityTable entityTable;
     private Map<String, EntityField> entityFieldMap = new HashMap<>();
     private List<String> indexStringList = null;
+
+    public Map<String, EntityField> getPrimaryFieldMap() {
+        return primaryFieldMap;
+    }
+
     private Map<String, EntityField> primaryFieldMap = new HashMap<>();
 
     public List<String> getColumnNameList() {

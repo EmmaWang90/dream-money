@@ -3,25 +3,68 @@ package com.wangdan.dream.persistence.orm.sql;
 import com.google.common.base.Joiner;
 import com.wangdan.dream.persistence.orm.DataBaseType;
 import com.wangdan.dream.persistence.orm.filter.Condition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SqlHelper {
+    public static final Logger logger = LoggerFactory.getLogger(SqlHelper.class);
     public static final DataBaseType defaultDatabaseType = DataBaseType.POSTGRESQL;
     private static Map<DataBaseType, DatabaseSqlHelper> databaseSqlHelperMap = new HashMap<>();
 
     static {
         databaseSqlHelperMap.put(DataBaseType.POSTGRESQL, new PostgreHelper());
-
     }
 
     public static String[] getCreate(DataBaseType dataBaseType, Class<?> clazz) {
         String createTableSql = getCreate(clazz);
         String createIndexSql = databaseSqlHelperMap.get(dataBaseType).getCreateIndex(clazz);
         return new String[]{createTableSql, createIndexSql};
+    }
+
+    private static <T> String createColumnValueString(EntityField entityField, T entity) {
+        Field field = entityField.getField();
+        field.setAccessible(true);
+        try {
+            Object fieldValue = field.get(entity);
+            String string = "\"" + entityField.getFieldName() + "\"" + " = ";
+            if (fieldValue instanceof String) {
+                string += "\'" + fieldValue + "\'";
+            } else
+                string += fieldValue;
+            return string;
+        } catch (IllegalAccessException e) {
+            logger.error("failed to create modify sql", e);
+        }
+        return null;
+    }
+
+    public static <T> String getModify(DataBaseType dataBaseType, T entity) {
+        Class<T> entityClass = (Class<T>) entity.getClass();
+        EntityMetaData entityMetaData = EntityMetaDataHelper.getEntityMetaData(entityClass);
+        StringBuilder stringBuilder = new StringBuilder("UPDATE ");
+        stringBuilder.append(entityMetaData.getTableName());
+        stringBuilder.append(" SET ");
+        Map<String, EntityField> entityFieldMap = entityMetaData.getEntityFieldMap();
+        String setString = entityFieldMap.values().stream().map(entityField -> {
+            return createColumnValueString(entityField, entity);
+        }).collect(Collectors.joining(","));
+        stringBuilder.append(setString);
+        if (!entityMetaData.getPrimaryFieldMap().isEmpty()) {
+            Map<String, EntityField> primaryFieldMap = entityMetaData.getPrimaryFieldMap();
+            String selectString = primaryFieldMap.values().stream().map(entityField -> {
+                return createColumnValueString(entityField, entity);
+            }).collect(Collectors.joining(","));
+            stringBuilder.append(" WHERE ");
+            stringBuilder.append(selectString);
+        } else
+            throw new IllegalArgumentException(entity + " has no primary field");
+        return stringBuilder.toString();
     }
 
     public static String getQuery(DataBaseType dataBaseType, Class entityClass, Condition condition) {

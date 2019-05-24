@@ -10,6 +10,8 @@ public interface EntityManager<T> {
 
     int delete(Class<T> tClass, Condition condition);
 
+    void modify(T entity);
+
     List<T> query(Class<T> tClass, Condition condition);
 
     <T> boolean save(T... entity);

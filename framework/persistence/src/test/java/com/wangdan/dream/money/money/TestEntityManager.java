@@ -45,5 +45,6 @@ public class TestEntityManager extends ServiceTestBase {
         assertNotNull(personList);
         assertEquals(personList.size(), 1);
         assertEquals(person.getId(), personList.iterator().next().getId());
+        entityManager.modify(person);
     }
 }
