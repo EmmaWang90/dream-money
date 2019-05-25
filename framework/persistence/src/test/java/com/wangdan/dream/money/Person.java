@@ -2,10 +2,12 @@ package com.wangdan.dream.money;
 
 import com.wangdan.dream.persistence.orm.annotations.Column;
 import com.wangdan.dream.persistence.orm.annotations.Table;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
 @Table
+@EqualsAndHashCode
 public class Person {
     @Column
     private Date birthday;

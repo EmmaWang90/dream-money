@@ -43,6 +43,17 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
         return 0;
     }
 
+    @Override
+    public void delete(T entity) {
+        String sql = SqlHelper.getDelete(getDataBaseType(), entity);
+        Connection connection = getConnection();
+        try (Statement statement = connection.createStatement();) {
+            statement.execute(sql);
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
     public EntityTableManager getEntityTableManager() {
         return entityTableManager;
     }

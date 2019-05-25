@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,12 @@ public class SqlHelper {
         return new String[]{createTableSql, createIndexSql};
     }
 
+    private static <T> String createColumnValueString(Collection<EntityField> entityFieldSet, T entity, String delimiter) {
+        return entityFieldSet.stream().map(entityField -> {
+            return createColumnValueString(entityField, entity);
+        }).collect(Collectors.joining(delimiter));
+    }
+
     private static <T> String createColumnValueString(EntityField entityField, T entity) {
         Field field = entityField.getField();
         field.setAccessible(true);
@@ -44,6 +51,15 @@ public class SqlHelper {
         return null;
     }
 
+    public static <T> String getDelete(DataBaseType dataBaseType, T entity) {
+        StringBuilder stringBuilder = new StringBuilder("DELETE FROM ");
+        EntityMetaData entityMetaData = EntityMetaDataHelper.getEntityMetaData(entity.getClass());
+        stringBuilder.append(entityMetaData.getTableName());
+        stringBuilder.append(" WHERE ");
+        stringBuilder.append(createColumnValueString((Collection<EntityField>) entityMetaData.getPrimaryFieldMap().values(), entity, " AND "));
+        return stringBuilder.toString();
+    }
+
     public static <T> String getModify(DataBaseType dataBaseType, T entity) {
         Class<T> entityClass = (Class<T>) entity.getClass();
         EntityMetaData entityMetaData = EntityMetaDataHelper.getEntityMetaData(entityClass);
@@ -51,15 +67,12 @@ public class SqlHelper {
         stringBuilder.append(entityMetaData.getTableName());
         stringBuilder.append(" SET ");
         Map<String, EntityField> entityFieldMap = entityMetaData.getEntityFieldMap();
-        String setString = entityFieldMap.values().stream().map(entityField -> {
-            return createColumnValueString(entityField, entity);
-        }).collect(Collectors.joining(","));
+        Collection<EntityField> entityFieldSet = entityFieldMap.values();
+        String setString = createColumnValueString(entityFieldSet, entity, ",");
         stringBuilder.append(setString);
         if (!entityMetaData.getPrimaryFieldMap().isEmpty()) {
             Map<String, EntityField> primaryFieldMap = entityMetaData.getPrimaryFieldMap();
-            String selectString = primaryFieldMap.values().stream().map(entityField -> {
-                return createColumnValueString(entityField, entity);
-            }).collect(Collectors.joining(","));
+            String selectString = createColumnValueString(primaryFieldMap.values(), entity, ",");
             stringBuilder.append(" WHERE ");
             stringBuilder.append(selectString);
         } else

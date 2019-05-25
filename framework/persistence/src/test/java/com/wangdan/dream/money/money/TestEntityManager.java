@@ -10,6 +10,7 @@ import com.wangdan.dream.persistence.orm.EntityTableManager;
 import com.wangdan.dream.persistence.orm.filter.Condition;
 import com.wangdan.dream.persistence.orm.impl.EntityManagerImpl;
 import com.wangdan.dream.persistence.orm.impl.connection.DatabaseConnectionFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +34,13 @@ public class TestEntityManager extends ServiceTestBase {
         EntityTableManager entityTableManager = (EntityTableManager) entityManagerImpl.getService(EntityTableManager.class);
         entityTableManager.clearTable(DataBaseType.POSTGRESQL, Person.class);
     }
+
+    @After
+    public void after() {
+        EntityManagerImpl entityManagerImpl = (EntityManagerImpl) entityManager;
+        EntityTableManager entityTableManager = (EntityTableManager) entityManagerImpl.getService(EntityTableManager.class);
+        entityTableManager.dropTable(DataBaseType.POSTGRESQL, Person.class);
+    }
     @Test
     public void test() throws SQLException {
         before();
@@ -44,7 +52,13 @@ public class TestEntityManager extends ServiceTestBase {
         List<Person> personList = entityManager.query(Person.class, new Condition());
         assertNotNull(personList);
         assertEquals(personList.size(), 1);
-        assertEquals(person.getId(), personList.iterator().next().getId());
+        assertEquals(person, personList.iterator().next());
+        person.setMoney(88.5);
         entityManager.modify(person);
+        personList = entityManager.query(Person.class, new Condition());
+        assertEquals(person, personList.iterator().next());
+        entityManager.delete(person);
+        personList = entityManager.query(Person.class, new Condition());
+        assertEquals(0, personList.size());
     }
 }

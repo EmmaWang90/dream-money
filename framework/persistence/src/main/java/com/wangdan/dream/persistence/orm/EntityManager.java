@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface EntityManager<T> {
 
+    void delete(T entity);
+
     EntityTableManager getEntityTableManager();
 
     int delete(Class<T> tClass, Condition condition);
