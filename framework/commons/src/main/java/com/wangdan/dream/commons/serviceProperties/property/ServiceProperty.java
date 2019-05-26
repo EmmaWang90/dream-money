@@ -1,4 +1,4 @@
-package com.wangdan.dream.commons.serviceProperties;
+package com.wangdan.dream.commons.serviceProperties.property;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

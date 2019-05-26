@@ -1,5 +1,8 @@
 package com.wangdan.dream.commons.serviceProperties;
 
+import com.wangdan.dream.commons.serviceProperties.property.PropertyFile;
+import com.wangdan.dream.commons.serviceProperties.property.ServicePropertiesUtil;
+import com.wangdan.dream.commons.serviceProperties.property.ServiceProperty;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

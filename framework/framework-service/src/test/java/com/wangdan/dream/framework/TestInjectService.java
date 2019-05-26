@@ -1,7 +1,7 @@
 package com.wangdan.dream.framework;
 
-import com.wangdan.dream.commons.serviceProperties.Property;
-import com.wangdan.dream.commons.serviceProperties.PropertyFile;
+import com.wangdan.dream.commons.serviceProperties.property.Property;
+import com.wangdan.dream.commons.serviceProperties.property.PropertyFile;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

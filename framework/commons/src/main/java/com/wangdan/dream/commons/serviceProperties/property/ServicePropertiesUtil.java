@@ -1,5 +1,7 @@
-package com.wangdan.dream.commons.serviceProperties;
+package com.wangdan.dream.commons.serviceProperties.property;
 
+
+import com.wangdan.dream.commons.serviceProperties.Environment;
 
 import java.io.File;
 

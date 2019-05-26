@@ -1,6 +1,6 @@
 package com.wangdan.dream.persistence.orm.impl.connection;
 
-import com.wangdan.dream.commons.serviceProperties.PropertyFile;
+import com.wangdan.dream.commons.serviceProperties.property.PropertyFile;
 import com.wangdan.dream.framework.ServiceBase;
 import com.wangdan.dream.framework.ServiceFactoryBase;
 import com.wangdan.dream.persistence.orm.DataBaseType;

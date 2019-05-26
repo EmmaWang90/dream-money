@@ -1,8 +1,8 @@
 package com.wangdan.dream.framework;
 
-import com.wangdan.dream.commons.serviceProperties.Property;
-import com.wangdan.dream.commons.serviceProperties.ServicePropertiesUtil;
-import com.wangdan.dream.commons.serviceProperties.ServiceProperty;
+import com.wangdan.dream.commons.serviceProperties.property.Property;
+import com.wangdan.dream.commons.serviceProperties.property.ServicePropertiesUtil;
+import com.wangdan.dream.commons.serviceProperties.property.ServiceProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
