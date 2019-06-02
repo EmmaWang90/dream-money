@@ -13,7 +13,7 @@ public enum Currency {
 
     public static Currency parseValue(String value) {
         for (Currency currency : Currency.values()) {
-            if (currency.values().equals(value))
+            if (currency.name().equals(value))
                 return currency;
         }
         throw new IllegalArgumentException();
