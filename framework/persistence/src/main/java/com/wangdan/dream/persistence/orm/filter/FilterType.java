@@ -47,6 +47,10 @@ public enum FilterType {
     private FilterType(String value) {
         this.value = value;
     }
+
+    public String value() {
+        return this.value;
+    }
     public abstract boolean check(Object fieldValue, Object validValue);
 
 }

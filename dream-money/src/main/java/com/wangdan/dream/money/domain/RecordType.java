@@ -11,7 +11,15 @@ public enum RecordType {
         this.values = Arrays.asList(values);
     }
 
-    public static RecordType parse(String value) {
+    public static RecordType parseName(String value) {
+        for (RecordType recordType : RecordType.values()) {
+            if (recordType.name().contains(value))
+                return recordType;
+        }
+        throw new IllegalArgumentException();
+    }
+
+    public static RecordType parseValue(String value) {
         for (RecordType recordType : RecordType.values()) {
             if (recordType.values.contains(value))
                 return recordType;

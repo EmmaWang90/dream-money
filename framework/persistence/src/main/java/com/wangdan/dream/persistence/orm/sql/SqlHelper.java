@@ -1,14 +1,12 @@
 package com.wangdan.dream.persistence.orm.sql;
 
 import com.google.common.base.Joiner;
-import com.wangdan.dream.commons.serviceProperties.BeanUtils;
 import com.wangdan.dream.persistence.orm.DataBaseType;
 import com.wangdan.dream.persistence.orm.filter.Condition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -82,21 +80,16 @@ public class SqlHelper {
         return stringBuilder.toString();
     }
 
-    public static String getQuery(DataBaseType dataBaseType, Class entityClass, Condition condition) {
+    public static String getQuery(DataBaseType dataBaseType, Class entityClass, Condition condition) throws NoSuchFieldException {
         EntityMetaData<?> entityMetaData = EntityMetaDataHelper.getEntityMetaData(entityClass);
-        StringBuilder stringBuilder = new StringBuilder("SELECT * from ");
+        StringBuilder stringBuilder = new StringBuilder("SELECT ");
+        stringBuilder.append("*");
+        stringBuilder.append(" from ");
         stringBuilder.append(entityMetaData.getTableName());
-        if (condition.getFilterGroup() != null) {
+        if (condition != null) {
             stringBuilder.append(" where ");
-            stringBuilder.append(condition.getFilterGroup().toSql());
+            stringBuilder.append(condition.toSql(entityClass));
         }
-        if (condition.getOrder() != null) {
-            //TODO
-        }
-        if (condition.getRange() != null) {
-            //TODO
-        }
-
         return stringBuilder.toString();
     }
 
@@ -126,33 +119,6 @@ public class SqlHelper {
         return stringBuilder.toString();
     }
 
-    private static void getCreateEnum(EntityMetaData entityMetaData, StringBuilder stringBuilder) {
-        Map<String, EntityField> entityFieldMap = entityMetaData.getEntityFieldMap();
-        for (Map.Entry<String, EntityField> entityFieldEntry : entityFieldMap.entrySet()) {
-            Class fieldClass = entityFieldEntry.getValue().getField().getType();
-            if (Enum.class.isAssignableFrom(fieldClass)) {
-                stringBuilder.append("DO $$\n" +
-                        "BEGIN \n" +
-                        "IF EXISTS (SELECT * FROM pg_type where \"typname\" = \'");
-                stringBuilder.append(fieldClass.getSimpleName().toLowerCase());
-                stringBuilder.append("\') THEN\n" +
-                        "drop type ");
-                stringBuilder.append(fieldClass.getSimpleName().toLowerCase());
-                stringBuilder.append(";\nend if;\n" +
-                        "END $$;\n");
-                stringBuilder.append("\nCREATE TYPE ");
-                stringBuilder.append(fieldClass.getSimpleName());
-                stringBuilder.append(" AS ENUM (");
-                Object[] fieldValues = (Object[]) BeanUtils.invoke(fieldClass, "values");
-                List<String> fieldValueNameList = new ArrayList<>();
-                for (Object fieldValue : fieldValues) {
-                    fieldValueNameList.add("\'" + (String) BeanUtils.invoke(fieldValue, "name") + "\'");
-                }
-                stringBuilder.append(Joiner.on(",").join(fieldValueNameList));
-                stringBuilder.append("); \n");
-            }
-        }
-    }
 
     public static <T> String getSave(DataBaseType defaultDatabaseType, Class<T> clazz) {
         EntityMetaData<T> entityMetaData = EntityMetaDataHelper.getEntityMetaData(clazz);

@@ -54,7 +54,7 @@ public class EntityMetaData<T> {
     }
 
     public String getTableName() {
-        return entityTable.getTableName().toLowerCase();
+        return entityTable.getTableName();
     }
 
     public void initialize() {
@@ -70,7 +70,8 @@ public class EntityMetaData<T> {
             field.setAccessible(true);
             if (column != null) {
                 EntityField entityField = new EntityField();
-                entityField.setFieldName(column.value().isEmpty() ? field.getName() : column.value());
+                entityField.setFieldName(column.value().isEmpty() ? field.getName().toLowerCase() : column.value());
+                entityField.setColumnName(field.getName());
                 entityField.setClazz(field.getType());
                 entityField.setField(field);
                 entityField.setColumn(column);

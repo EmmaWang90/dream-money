@@ -1,10 +1,12 @@
 package com.wangdan.dream.persistence.orm.filter;
 
+import com.google.common.base.Joiner;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,7 +15,11 @@ import java.util.List;
 @NoArgsConstructor
 public class FilterGroup {
     private List<FilterExpress> filterExpressList;
-    private FilterGroupType filterGroupType;
+    private FilterGroupType filterGroupType = FilterGroupType.AND;
+
+    public FilterGroup(List<FilterExpress> filterExpressList) {
+        this.filterExpressList = filterExpressList;
+    }
 
     public boolean isValid(Object instance) {
         boolean result = true;
@@ -24,12 +30,13 @@ public class FilterGroup {
         return result;
     }
 
-    public String toSql() {
-        StringBuilder stringBuilder = new StringBuilder();
+    public String toSql(Class entityClass) throws NoSuchFieldException {
+        StringBuilder stringBuilder = new StringBuilder("");
+        List<String> sqlList = new ArrayList<>();
         for (FilterExpress filterExpress : filterExpressList) {
-            stringBuilder.append(" ");
-            stringBuilder.append(filterExpress.toSql());
+            sqlList.add(filterExpress.toSql(entityClass));
         }
+        stringBuilder.append(Joiner.on(filterGroupType.name() + "  ").join(sqlList));
         return stringBuilder.toString();
     }
 }

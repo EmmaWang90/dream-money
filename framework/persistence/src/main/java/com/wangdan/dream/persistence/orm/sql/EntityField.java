@@ -13,6 +13,16 @@ public class EntityField {
     private Field field;
     private String fieldName;
 
+    private String columnName;
+
+    public String getColumnName() {
+        return columnName;
+    }
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
+    }
+
     public Class<?> getClazz() {
         return clazz;
     }

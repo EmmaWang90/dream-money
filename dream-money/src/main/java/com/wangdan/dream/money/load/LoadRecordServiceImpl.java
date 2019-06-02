@@ -79,7 +79,7 @@ public class LoadRecordServiceImpl extends ServiceBase implements LoadRecordServ
                         for (int j = 1; j < dataList.size(); j++) {
                             String valueString = dataList.get(j)[i];
                             try {
-                                field.set(recordList.get(j - 1), BeanUtils.invoke(fieldType, "parse", valueString));
+                                field.set(recordList.get(j - 1), BeanUtils.invoke(fieldType, "parseValue", valueString));
                             } catch (IllegalAccessException e) {
                                 logger.error(e.getMessage());
                             }

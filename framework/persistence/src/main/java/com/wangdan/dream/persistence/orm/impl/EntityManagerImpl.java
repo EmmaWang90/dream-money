@@ -54,10 +54,6 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
         }
     }
 
-    public EntityTableManager getEntityTableManager() {
-        return entityTableManager;
-    }
-
     private Connection getConnection() {
         DataBaseServiceImpl dataBaseService = this.databaseConnectionFactory.getService(getDataBaseType());
         return dataBaseService.getConnection();
@@ -65,6 +61,10 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
 
     public DataBaseType getDataBaseType() {
         return dataBaseType;
+    }
+
+    public EntityTableManager getEntityTableManager() {
+        return entityTableManager;
     }
 
     private int getTypes(Class fieldClazz) {
@@ -101,10 +101,11 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
             return null;
         if (!entityTableManager.exist(getDataBaseType(), entityClass))
             entityTableManager.createTable(getDataBaseType(), entityClass);
-        String sql = SqlHelper.getQuery(getDataBaseType(), entityClass, condition);
-        Connection connection = getConnection();
+
         List<T> result = new ArrayList<>();
         try {
+            String sql = SqlHelper.getQuery(getDataBaseType(), entityClass, condition);
+            Connection connection = getConnection();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
             EntityMetaData<T> entityMetaData = EntityMetaDataHelper.getEntityMetaData(entityClass);
@@ -121,35 +122,6 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
             logger.error("failed to query for " + entityClass, condition, e);
         }
         return result;
-    }
-
-    public <T> boolean save(T... entityArray) {
-        if (entityArray == null || entityArray.length == 0)
-            return false;
-        Class<T> entityClass = (Class<T>) entityArray[0].getClass();
-        if (!entityTableManager.exist(getDataBaseType(), entityClass))
-            entityTableManager.createTable(getDataBaseType(), entityClass);
-        String sql = SqlHelper.getSave(getDataBaseType(), entityClass);
-        DataBaseServiceImpl dataBaseService = this.databaseConnectionFactory.getService(getDataBaseType());
-        Connection connection = dataBaseService.getConnection();
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            Map<String, EntityField> entityFieldMap = EntityMetaDataHelper.getEntityMetaData(entityClass).getEntityFieldMap();
-            List<String> columnNameList = EntityMetaDataHelper.getEntityMetaData(entityClass).getColumnNameList();
-            for (T entity : entityArray) {
-                for (int i = 0; i < columnNameList.size(); i++) {
-                    EntityField entityField = entityFieldMap.get(columnNameList.get(i));
-                    Object fieldValue = BeanUtils.getField(entity, entityField.getFieldName());
-                    setPreparedStatementParameter(entityField, fieldValue, preparedStatement, i);
-                }
-                logger.info("" + entity);
-                preparedStatement.execute();
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-        }
-
-        return true;
     }
 
     private Object readFromResultSet(EntityField entityField, ResultSet resultSet) throws SQLException {
@@ -181,9 +153,43 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
                 break;
             }
             default:
-                throw new IllegalArgumentException("failed to process " + entityField.getClazz().getSimpleName());
+                if (Enum.class.isAssignableFrom(entityField.getClazz())) {
+                    String rawValue = resultSet.getString(fieldName);
+                    if (rawValue != null)
+                        value = BeanUtils.invoke(entityField.getClazz(), "parseName", rawValue);
+                } else
+                    throw new IllegalArgumentException("failed to process " + entityField.getClazz().getSimpleName());
         }
         return value;
+    }
+
+    public <T> boolean save(T... entityArray) {
+        if (entityArray == null || entityArray.length == 0)
+            return false;
+        Class<T> entityClass = (Class<T>) entityArray[0].getClass();
+        if (!entityTableManager.exist(getDataBaseType(), entityClass))
+            entityTableManager.createTable(getDataBaseType(), entityClass);
+        String sql = SqlHelper.getSave(getDataBaseType(), entityClass);
+        DataBaseServiceImpl dataBaseService = this.databaseConnectionFactory.getService(getDataBaseType());
+        Connection connection = dataBaseService.getConnection();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            Map<String, EntityField> entityFieldMap = EntityMetaDataHelper.getEntityMetaData(entityClass).getEntityFieldMap();
+            List<String> columnNameList = EntityMetaDataHelper.getEntityMetaData(entityClass).getColumnNameList();
+            for (T entity : entityArray) {
+                for (int i = 0; i < columnNameList.size(); i++) {
+                    EntityField entityField = entityFieldMap.get(columnNameList.get(i));
+                    Object fieldValue = BeanUtils.getField(entity, entityField.getColumnName());
+                    setPreparedStatementParameter(entityField, fieldValue, preparedStatement, i);
+                }
+                logger.info("" + entity);
+                preparedStatement.execute();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+
+        return true;
     }
 
     private void setPreparedStatementParameter(EntityField entityField, Object fieldValue, PreparedStatement preparedStatement, int i) throws SQLException {

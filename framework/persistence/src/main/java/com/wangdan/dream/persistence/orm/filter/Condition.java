@@ -43,4 +43,13 @@ public class Condition {
         return filterGroup.isValid(instance);
     }
 
+    public String toSql(Class entityClass) throws NoSuchFieldException {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(filterGroup.toSql(entityClass));
+        if (order != null)
+            stringBuilder.append(order.toSql());
+        if (range != null)
+            stringBuilder.append(range.toSql());
+        return stringBuilder.toString();
+    }
 }
