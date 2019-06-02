@@ -41,4 +41,15 @@ public class BeanUtils {
         }
         return null;
     }
+
+    public static Object invoke(Object instance, String methodName, Object... arguments) {
+        Class<?>[] argumentsTypes = (Class<?>[]) Arrays.stream(arguments).map(Object::getClass).collect(toSet()).toArray(new Class<?>[]{});
+        try {
+            Method method = instance.getClass().getMethod(methodName, argumentsTypes);
+            return method.invoke(instance, arguments);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
+        return null;
+    }
 }

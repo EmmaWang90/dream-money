@@ -75,6 +75,15 @@ public class LoadRecordServiceImpl extends ServiceBase implements LoadRecordServ
                                 logger.error(e.getMessage());
                             }
                         }
+                    } else if (Enum.class.isAssignableFrom(fieldType)) {
+                        for (int j = 1; j < dataList.size(); j++) {
+                            String valueString = dataList.get(j)[i];
+                            try {
+                                field.set(recordList.get(j - 1), BeanUtils.invoke(fieldType, "parse", valueString));
+                            } catch (IllegalAccessException e) {
+                                logger.error(e.getMessage());
+                            }
+                        }
                     }
                 } else {
                     for (int j = 1; j < dataList.size(); j++) {
@@ -91,6 +100,6 @@ public class LoadRecordServiceImpl extends ServiceBase implements LoadRecordServ
             } else
                 logger.error("failed to get field for {}", columnName);
         }
-        return null;
+        return recordList;
     }
 }

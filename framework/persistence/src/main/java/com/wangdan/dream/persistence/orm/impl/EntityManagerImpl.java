@@ -123,41 +123,33 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
         return result;
     }
 
-    private void setPreparedStatementParameter(EntityField entityField, Object fieldValue, PreparedStatement preparedStatement, int i) throws SQLException {
-        if (fieldValue == null) {
-            preparedStatement.setNull(i + 1, getTypes(entityField.getClazz()));
-            return;
+    public <T> boolean save(T... entityArray) {
+        if (entityArray == null || entityArray.length == 0)
+            return false;
+        Class<T> entityClass = (Class<T>) entityArray[0].getClass();
+        if (!entityTableManager.exist(getDataBaseType(), entityClass))
+            entityTableManager.createTable(getDataBaseType(), entityClass);
+        String sql = SqlHelper.getSave(getDataBaseType(), entityClass);
+        DataBaseServiceImpl dataBaseService = this.databaseConnectionFactory.getService(getDataBaseType());
+        Connection connection = dataBaseService.getConnection();
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            Map<String, EntityField> entityFieldMap = EntityMetaDataHelper.getEntityMetaData(entityClass).getEntityFieldMap();
+            List<String> columnNameList = EntityMetaDataHelper.getEntityMetaData(entityClass).getColumnNameList();
+            for (T entity : entityArray) {
+                for (int i = 0; i < columnNameList.size(); i++) {
+                    EntityField entityField = entityFieldMap.get(columnNameList.get(i));
+                    Object fieldValue = BeanUtils.getField(entity, entityField.getFieldName());
+                    setPreparedStatementParameter(entityField, fieldValue, preparedStatement, i);
+                }
+                logger.info("" + entity);
+                preparedStatement.execute();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
-        switch (entityField.getClazz().getSimpleName()) {
-            case "Integer": {
-                Integer integer = (Integer) fieldValue;
-                preparedStatement.setInt(i + 1, integer.intValue());
-                break;
-            }
-            case "Double": {
-                Double aDouble = (Double) fieldValue;
-                preparedStatement.setDouble(i + 1, aDouble.doubleValue());
-                break;
-            }
-            case "String": {
-                String string = (String) fieldValue;
-                preparedStatement.setString(i + 1, string);
-                break;
-            }
-            case "Date": {
-                Date date = (Date) fieldValue;
-                preparedStatement.setDate(i + 1, date);
-                break;
-            }
-            case "Long": {
-                Long aLong = (Long) fieldValue;
-                preparedStatement.setLong(i + 1, aLong);
-                break;
-            }
-            default:
-                throw new IllegalArgumentException("failed to process " + entityField.getClazz().getSimpleName());
 
-        }
+        return true;
     }
 
     private Object readFromResultSet(EntityField entityField, ResultSet resultSet) throws SQLException {
@@ -194,31 +186,44 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
         return value;
     }
 
-    public <T> boolean save(T... entityArray) {
-        if (entityArray == null || entityArray.length == 0)
-            return false;
-        Class<T> entityClass = (Class<T>) entityArray[0].getClass();
-        if (!entityTableManager.exist(getDataBaseType(), entityClass))
-            entityTableManager.createTable(getDataBaseType(), entityClass);
-        String sql = SqlHelper.getSave(getDataBaseType(), entityClass);
-        DataBaseServiceImpl dataBaseService = this.databaseConnectionFactory.getService(getDataBaseType());
-        Connection connection = dataBaseService.getConnection();
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            Map<String, EntityField> entityFieldMap = EntityMetaDataHelper.getEntityMetaData(entityClass).getEntityFieldMap();
-            List<String> columnNameList = EntityMetaDataHelper.getEntityMetaData(entityClass).getColumnNameList();
-            for (T entity : entityArray) {
-                for (int i = 0; i < columnNameList.size(); i++) {
-                    EntityField entityField = entityFieldMap.get(columnNameList.get(i));
-                    Object fieldValue = BeanUtils.getField(entity, entityField.getFieldName());
-                    setPreparedStatementParameter(entityField, fieldValue, preparedStatement, i);
-                }
-                preparedStatement.execute();
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage());
+    private void setPreparedStatementParameter(EntityField entityField, Object fieldValue, PreparedStatement preparedStatement, int i) throws SQLException {
+        if (fieldValue == null) {
+            preparedStatement.setNull(i + 1, getTypes(entityField.getClazz()));
+            return;
         }
+        switch (entityField.getClazz().getSimpleName()) {
+            case "Integer": {
+                Integer integer = (Integer) fieldValue;
+                preparedStatement.setInt(i + 1, integer.intValue());
+                break;
+            }
+            case "Double": {
+                Double aDouble = (Double) fieldValue;
+                preparedStatement.setDouble(i + 1, aDouble.doubleValue());
+                break;
+            }
+            case "String": {
+                String string = (String) fieldValue;
+                preparedStatement.setString(i + 1, string);
+                break;
+            }
+            case "Date": {
+                java.util.Date date = (java.util.Date) fieldValue;
+                Date sqlDate = new Date(date.getTime());
+                preparedStatement.setDate(i + 1, sqlDate);
+                break;
+            }
+            case "Long": {
+                Long aLong = (Long) fieldValue;
+                preparedStatement.setLong(i + 1, aLong);
+                break;
+            }
+            default:
+                if (Enum.class.isAssignableFrom(entityField.getClazz())) {
+                    preparedStatement.setString(i + 1, (String) BeanUtils.invoke(fieldValue, "name"));
+                } else
+                    throw new IllegalArgumentException("failed to process " + entityField.getClazz().getSimpleName());
 
-        return true;
+        }
     }
 }

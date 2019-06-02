@@ -65,12 +65,14 @@ public class EntityField {
     public String getFieldParameter() {
         if (clazz.equals(Integer.class))
             return "int ";
-        else if (clazz.equals(String.class) || clazz.equals(CharSequence.class))
+        else if (clazz.equals(String.class) || clazz.equals(CharSequence.class) || Enum.class.isAssignableFrom(clazz))
             return "varchar(" + column.displaySize() + ")";
         else if (clazz.equals(Double.class) || clazz.equals(Float.class))
             return "decimal(" + (column.displaySize() - 3) + ", 3)";
         else if (clazz.equals(Date.class))
             return "date";
+        else if (clazz.equals(Long.class))
+            return "bigint ";
         else
             throw new IllegalArgumentException("out of capabillity");
     }
