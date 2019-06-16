@@ -48,5 +48,4 @@ public class ServiceProperty {
             logger.error("load properties from {}", file.getAbsolutePath(), e);
         }
     }
-
 }
