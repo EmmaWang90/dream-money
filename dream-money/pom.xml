@@ -18,6 +18,11 @@
             <artifactId>framework-persistence</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.wangdan.dream</groupId>
+            <artifactId>rest-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

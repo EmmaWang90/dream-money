@@ -14,6 +14,8 @@ public class ServicePropertiesUtil {
                 fileName = "./target/test-classes/" + fileName;
             else if (Environment.isKarafEnabled())
                 fileName = "./etc/" + fileName;
+            else
+                fileName = "./src/main/resources/" + fileName;
             File file = new File(fileName);
             ServiceProperty serviceProperty = new ServiceProperty(file);
             serviceProperty.load();

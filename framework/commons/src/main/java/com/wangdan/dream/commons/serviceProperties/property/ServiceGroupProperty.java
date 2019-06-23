@@ -21,17 +21,18 @@ public class ServiceGroupProperty {
 
     private void group(ServiceProperty serviceProperty) {
         Enumeration keys = serviceProperty.getKeys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement().toString();
-            if (key.indexOf(".") > 0) {
-                String[] keyArray = key.split("\\.");
-                String group = keyArray[0];
-                String subKey = keyArray[1];
-                if (!groupProperties.containsKey(group))
-                    groupProperties.put(group, new HashMap<>());
-                groupProperties.get(group).put(subKey, serviceProperty.getString(key));
+        if (keys != null) {
+            while (keys.hasMoreElements()) {
+                String key = keys.nextElement().toString();
+                if (key.indexOf(".") > 0) {
+                    String[] keyArray = key.split("\\.");
+                    String group = keyArray[0];
+                    String subKey = keyArray[1];
+                    if (!groupProperties.containsKey(group))
+                        groupProperties.put(group, new HashMap<>());
+                    groupProperties.get(group).put(subKey, serviceProperty.getString(key));
+                }
             }
-
         }
     }
 }

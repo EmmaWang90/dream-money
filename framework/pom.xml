@@ -16,6 +16,7 @@
         <module>framework-service</module>
         <module>commons</module>
         <module>persistence</module>
+        <module>rest-server</module>
     </modules>
 
 </project>

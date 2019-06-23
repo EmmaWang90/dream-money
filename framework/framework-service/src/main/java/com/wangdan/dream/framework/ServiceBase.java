@@ -23,18 +23,27 @@ public class ServiceBase {
 
     public ServiceBase(ServiceBase parent) {
         this.parent = parent;
+        initialize();
+        start();
     }
 
     public void addService(Class<?> clazz, ServiceBase instance) {
-        if (instance instanceof ServiceBase) {
-            if (childrenServices.containsKey(clazz) && childrenServices.get(clazz) != null)
-                childrenServices.get(clazz).add(instance);
-            else {
-                List<ServiceBase> serviceBaseList = new ArrayList<ServiceBase>();
-                serviceBaseList.add(instance);
-                childrenServices.put(clazz, serviceBaseList);
-            }
+        if (childrenServices.get(clazz) == null)
+            childrenServices.put(clazz, new ArrayList<>());
+        childrenServices.get(clazz).add(instance);
+    }
+
+    private List<InjectService> getInjectServiceAnnotations() {
+        List<InjectService> annotations = new ArrayList<>();
+        Class<?> clazz = this.getClass();
+        while (clazz != null) {
+            if (clazz.getDeclaredAnnotation(InjectService.class) != null)
+                annotations.add(clazz.getDeclaredAnnotation(InjectService.class));
+            if (clazz.getAnnotation(InjectServices.class) != null)
+                annotations.addAll(Arrays.asList(clazz.getAnnotation(InjectServices.class).value()));
+            clazz = clazz.getSuperclass();
         }
+        return annotations;
     }
 
     public ServiceBase getService(Class<?> clazz) {
@@ -43,6 +52,10 @@ public class ServiceBase {
             return serviceBaseList.iterator().next();
         else
             return null;
+    }
+
+    protected ServiceProperty getServiceProperty() {
+        return this.serviceProperty;
     }
 
     public List<ServiceBase> getServices(Class<?> clazz) {
@@ -70,11 +83,8 @@ public class ServiceBase {
         this.serviceProperty = ServicePropertiesUtil.getServiceProperty(this.getClass());
     }
 
-    private void initializeService() {
-        List<InjectService> annotations = new ArrayList<>();
-        annotations.add(this.getClass().getDeclaredAnnotation(InjectService.class));
-        if (this.getClass().getDeclaredAnnotation(InjectServices.class) != null)
-            annotations.addAll(Arrays.asList(this.getClass().getDeclaredAnnotation(InjectServices.class).value()));
+    protected void initializeService() {
+        List<InjectService> annotations = getInjectServiceAnnotations();
         for (InjectService injectService : annotations) {
             if (injectService == null)
                 continue;
@@ -84,7 +94,7 @@ public class ServiceBase {
                 if (constructor.getParameterCount() == 1 && Arrays.equals(constructor.getParameterTypes(), new Class[]{ServiceBase.class})) {
                     try {
                         ServiceBase instance = (ServiceBase) constructor.newInstance(this);
-                        this.addService(injectService.accessClass() != null ? injectService.accessClass() : injectService.value(), instance);
+                        this.addService(injectService.accessClass(), instance);
                     } catch (Exception e) {
                         logger.error("failed to create instance for {}", implementationClass, e);
                     }
@@ -109,7 +119,7 @@ public class ServiceBase {
         for (Field field : fields) {
             Property property = field.getAnnotation(Property.class);
             if (property != null) {
-                String value = serviceProperty.getString(property.value(), property.defaultValue());
+                String value = serviceProperty.getString(property.name(), property.defaultValue());
                 Class fieldClass = field.getType();
                 field.setAccessible(true);
                 if (fieldClass.equals(String.class))
@@ -156,5 +166,4 @@ public class ServiceBase {
             for (ServiceBase serviceBase : childrenServices.get(clazz))
                 serviceBase.start();
     }
-
 }
