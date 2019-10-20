@@ -18,6 +18,10 @@ import java.util.Map;
 
 public class LoadRecordServiceImpl extends ServiceBase implements LoadRecordService {
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
+
+    public LoadRecordServiceImpl() {
+        super(null);
+    }
     public LoadRecordServiceImpl(ServiceBase parent) {
         super(parent);
     }
