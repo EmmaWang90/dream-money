@@ -11,10 +11,11 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.ExecutorThreadPool;
-import org.glassfish.jersey.jetty.JettyHttpContainer;
-import org.glassfish.jersey.server.ContainerFactory;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,10 +31,10 @@ public class RestServerManagerServiceImpl extends ServiceBase implements RestSer
     }
 
     @Override
-    public void addServer(Class<? extends ServiceBase> restServerClass, RestServer restServerAnnotation) {
-        RestServerInfo restServerInfo = createRestServerInfo(restServerClass, restServerAnnotation);
-        createServer(restServerInfo);
-        restServerInfoConcurrentHashMap.put(restServerClass, restServerInfo);
+    public void addServer(ServiceBase serviceBase, RestServer restServerAnnotation, ServiceLocator serviceLocator) {
+        RestServerInfo restServerInfo = createRestServerInfo(serviceBase.getClass(), restServerAnnotation);
+        createServer(serviceBase, restServerInfo, serviceLocator);
+        restServerInfoConcurrentHashMap.put(serviceBase.getClass(), restServerInfo);
     }
 
     private RestServerInfo createRestServerInfo(Class<? extends ServiceBase> restServerClass, RestServer restServerAnnotation) {
@@ -48,13 +49,18 @@ public class RestServerManagerServiceImpl extends ServiceBase implements RestSer
         return new Server(executorThreadPool);
     }
 
-    private void createServer(RestServerInfo restServerInfo) {
+    private void createServer(ServiceBase serviceBase, RestServerInfo restServerInfo, ServiceLocator serviceLocator) {
         httpConfigureManager.resetRestServerInfo(restServerInfo);
-        ResourceConfig resourceConfig = new ResourceConfig(restServerInfo.getResourceClass());
-        JettyHttpContainer container = ContainerFactory.createContainer(JettyHttpContainer.class, resourceConfig);
+        ResourceConfig resourceConfig = new ResourceConfig();
+        resourceConfig.register(serviceBase);
+
+        DreamServletContainer dreamServletContainer = new DreamServletContainer(resourceConfig, serviceLocator);
+        ServletContextHandler servletContextHandler = new ServletContextHandler();
+        servletContextHandler.addServlet(new ServletHolder(dreamServletContainer), "/*");
+
         Server server = createServer();
         setServerConnector(restServerInfo, server);
-        server.setHandler(container);
+        server.setHandler(servletContextHandler);
         try {
             server.start();
         } catch (Exception e) {
@@ -80,12 +86,11 @@ public class RestServerManagerServiceImpl extends ServiceBase implements RestSer
     }
 
     @Override
-    public void start(ServiceBase serviceBase) {
+    public void start(ServiceBase serviceBase, ServiceLocator serviceLocator) {
         RestServer restServerAnnotation = serviceBase.getClass().getDeclaredAnnotation(RestServer.class);
         if (restServerAnnotation != null) {
             try {
-                addServer(serviceBase.getClass(), restServerAnnotation);
-
+                addServer(serviceBase, restServerAnnotation, serviceLocator);
             } catch (Exception e) {
                 logger.error("failed start rest server for {}", serviceBase, e);
             }
