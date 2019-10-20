@@ -23,8 +23,6 @@ public class ServiceBase {
 
     public ServiceBase(ServiceBase parent) {
         this.parent = parent;
-        initialize();
-        start();
     }
 
     public void addService(Class<?> clazz, ServiceBase instance) {
