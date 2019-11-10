@@ -1,5 +1,6 @@
 package com.wangdan.dream.money;
 
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -17,5 +18,6 @@ public interface DreamMoneyRestService {
 
     @POST
     @Path("/load-from-file")
-    void loadFromFile(String filePath);
+    @Consumes({MediaType.MULTIPART_FORM_DATA})
+    void loadFromFile();
 }
