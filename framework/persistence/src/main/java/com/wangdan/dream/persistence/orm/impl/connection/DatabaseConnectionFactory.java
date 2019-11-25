@@ -12,6 +12,10 @@ import java.util.Properties;
 
 @PropertyFile("com.wangdan.dream.database.cfg")
 public class DatabaseConnectionFactory extends ServiceFactoryBase {
+    public DatabaseConnectionFactory() {
+        super(null);
+    }
+
     public DatabaseConnectionFactory(ServiceBase parent) {
         super(parent);
     }

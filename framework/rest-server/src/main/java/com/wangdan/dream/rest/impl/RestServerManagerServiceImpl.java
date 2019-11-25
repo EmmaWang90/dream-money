@@ -16,6 +16,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.ExecutorThreadPool;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,6 +54,7 @@ public class RestServerManagerServiceImpl extends ServiceBase implements RestSer
         httpConfigureManager.resetRestServerInfo(restServerInfo);
         ResourceConfig resourceConfig = new ResourceConfig();
         resourceConfig.register(serviceBase);
+        resourceConfig.register(MultiPartFeature.class);
 
         DreamServletContainer dreamServletContainer = new DreamServletContainer(resourceConfig, serviceLocator);
         ServletContextHandler servletContextHandler = new ServletContextHandler();

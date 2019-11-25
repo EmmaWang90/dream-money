@@ -15,6 +15,7 @@ import com.wangdan.dream.persistence.orm.sql.EntityMetaData;
 import com.wangdan.dream.persistence.orm.sql.EntityMetaDataHelper;
 import com.wangdan.dream.persistence.orm.sql.SqlHelper;
 
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -33,6 +34,10 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
     private DatabaseConnectionFactory databaseConnectionFactory;
     @Service
     private EntityTableManager entityTableManager;
+
+    public EntityManagerImpl() {
+        super(null);
+    }
 
     public EntityManagerImpl(ServiceBase parent) {
         super(parent);
@@ -231,5 +236,10 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
                     throw new IllegalArgumentException("failed to process " + entityField.getClazz().getSimpleName());
 
         }
+    }
+
+    @Inject
+    public void setDatabaseConnectionFactory(DatabaseConnectionFactory databaseConnectionFactory) {
+        this.addService(DatabaseConnectionFactory.class, databaseConnectionFactory);
     }
 }
