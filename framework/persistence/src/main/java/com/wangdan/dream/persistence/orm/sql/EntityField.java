@@ -80,7 +80,7 @@ public class EntityField {
         else if (clazz.equals(Double.class) || clazz.equals(Float.class))
             return "decimal(" + (column.displaySize() - 3) + ", 3)";
         else if (clazz.equals(Date.class))
-            return "date";
+            return "bigint";
         else if (clazz.equals(Long.class))
             return "bigint ";
         else

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -19,6 +20,10 @@ public class FilterGroup {
 
     public FilterGroup(List<FilterExpress> filterExpressList) {
         this.filterExpressList = filterExpressList;
+    }
+
+    public FilterGroup(FilterExpress... filterExpressList) {
+        this.filterExpressList = Arrays.asList(filterExpressList);
     }
 
     public boolean isValid(Object instance) {
@@ -36,7 +41,7 @@ public class FilterGroup {
         for (FilterExpress filterExpress : filterExpressList) {
             sqlList.add(filterExpress.toSql(entityClass));
         }
-        stringBuilder.append(Joiner.on(filterGroupType.name() + "  ").join(sqlList));
+        stringBuilder.append(Joiner.on(" " + filterGroupType.name() + "  ").join(sqlList));
         return stringBuilder.toString();
     }
 }

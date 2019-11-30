@@ -17,13 +17,13 @@ import com.wangdan.dream.persistence.orm.sql.SqlHelper;
 
 import javax.inject.Inject;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -81,7 +81,7 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
             case "String":
                 return Types.VARCHAR;
             case "Date":
-                return Types.DATE;
+                return Types.BIGINT;
             case "Long":
                 return Types.BIGINT;
         }
@@ -146,9 +146,9 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
                 break;
             }
             case "Date": {
-                Date date = resultSet.getDate(fieldName);
-                if (date != null)
-                    value = new Date(date.getTime());
+                Long time = resultSet.getLong(fieldName);
+                if (time != null)
+                    value = new Date(time);
                 else
                     value = null;
                 break;
@@ -219,9 +219,7 @@ public class EntityManagerImpl<T> extends ServiceBase implements EntityManager<T
                 break;
             }
             case "Date": {
-                java.util.Date date = (java.util.Date) fieldValue;
-                Date sqlDate = new Date(date.getTime());
-                preparedStatement.setDate(i + 1, sqlDate);
+                preparedStatement.setLong(i + 1, ((Date) fieldValue).getTime());
                 break;
             }
             case "Long": {
