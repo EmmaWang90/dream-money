@@ -13,35 +13,46 @@
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
         <ul class="layui-nav" lay-filter="header">
-            <li class="layui-nav-item  layui-this"><a href="javascript:;">概览</a></li>
-            <li class="layui-nav-item">
-                <a href="javascript:;">报表</a>
-                <dl class="layui-nav-child">
-                    <dd><a href="">支出</a></dd>
-                    <dd><a href="">收入</a></dd>
-                    <dd><a href="">结余</a></dd>
-                </dl>
+            <li class="layui-nav-item  layui-this overview-nav" id="overview">
+                <a href="javascript:;">概览</a>
             </li>
-            <li class="layui-nav-item">
+            <li class="layui-nav-item  reports-nav" id="reports">
+                <a href="javascript:;">报表</a>
+            </li>
+            <li class="layui-nav-item  detail-nav">
                 <a href="javascript:;">明细</a>
             </li>
             <li class="layui-nav-item">
                 <a href="javascript:;">账户</a>
-                <!--<dl class="layui-nav-child">-->
-                <!--<dd><a href="">移动模块</a></dd>-->
-                <!--<dd><a href="">后台模版</a></dd>-->
-                <!--<dd class="layui-this"><a href="">选中项</a></dd>-->
-                <!--<dd><a href="">电商平台</a></dd>-->
-                <!--</dl>-->
             </li>
             <li class="layui-nav-item"><a href="javascript:;">导入数据</a></li>
         </ul>
     </div>
-
-    <div id="overview">
-        <iframe align="center" width="100%" height="2000" src="./overview.html" frameborder="no" border="0"
+</div>
+<div class="overview">
+    <iframe align="center" width="100%" height="1000" src="./overview.html" frameborder="no" border="0"
                 marginwidth="0" marginheight="0" scrolling="no"></iframe>
     </div>
+
+
+<div class="report">
+    <iframe align="center" width="100%" height="1000" src="./report.html" frameborder="no" border="0"
+            marginwidth="0" marginheight="0" scrolling="no"></iframe>
+</div>
+
+<div class="detail">
+    <iframe align="center" width="100%" height="1000" src="./detail.html" frameborder="no" border="0"
+            marginwidth="0" marginheight="0" scrolling="no"></iframe>
+</div>
+
+<div class="accounts">
+    <iframe align="center" width="100%" height="1000" src="./accounts.html" frameborder="no" border="0"
+            marginwidth="0" marginheight="0" scrolling="no"></iframe>
+</div>
+
+<div class="upload">
+    <iframe align="center" width="100%" height="1000" src="./upload.html" frameborder="no" border="0"
+            marginwidth="0" marginheight="0" scrolling="no"></iframe>
 </div>
 <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
 <script src="../layui-v2.5.5/layui/layui.js"></script>
@@ -55,12 +66,31 @@ layui.use(['element', 'layer'], function(){
     // on中参数与class中layui后面的名称有关，最里面的参数，可以找到filter-type
     element.on('nav(header)',function(a){
         var content = a.text();
-        console.log(content);
         console.log(a);
-
+        showRightPage(content);
   });
+  showRightPage("概览");
 });
+var pages = new Map();
+pages.set("概览", "overview");
+pages.set("报表", "reports");
+pages.set("明细", "detail");
+pages.set("账户", "accounts");
+pages.set("导入数据", "upload");
 
+function showRightPage(currentPage){
+    pages.forEach(function(item, key, mapObj){
+        <!--console.log("item " + item);-->
+        <!--console.log("mapObj " + mapObj);-->
+        if(key == currentPage){
+            console.log("show" + key);
+            $('.' + item).show();
+        }else{
+            console.log("hide" + key);
+             $('.' + item).hide();
+        }
+    });
+}
 
 
 
