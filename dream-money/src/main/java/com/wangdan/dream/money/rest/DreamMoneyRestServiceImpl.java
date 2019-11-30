@@ -14,7 +14,9 @@ import com.wangdan.dream.persistence.orm.EntityManager;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestServer(serverName = "default")
 public class DreamMoneyRestServiceImpl extends ApplicationBase implements DreamMoneyRestService {
@@ -48,12 +50,18 @@ public class DreamMoneyRestServiceImpl extends ApplicationBase implements DreamM
         return "aa";
     }
 
+
     @Override
-    public void loadFromFile(InputStream fileInputStream, FormDataContentDisposition dataContentDisposition) throws Exception {
+    public Map<String, Object> loadFromFile(InputStream fileInputStream, FormDataContentDisposition dataContentDisposition) throws Exception {
         logger.info("filePath : {}", dataContentDisposition.getFileName());
         String filePath = "./temp/" + dataContentDisposition.getFileName();
         FileUtils.save(fileInputStream, filePath);
         List<Record> recordList = loadRecordService.load(filePath);
         entityManager.save(recordList.toArray());
+
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("msg", "ok");
+        resultMap.put("code", 200);
+        return resultMap;
     }
 }

@@ -11,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.InputStream;
+import java.util.Map;
 
 @Path("/money")
 @Produces(MediaType.APPLICATION_JSON)
@@ -23,6 +24,6 @@ public interface DreamMoneyRestService {
     @POST
     @Path("/load-from-file")
     @Consumes({MediaType.MULTIPART_FORM_DATA})
-    void loadFromFile(@FormDataParam("file") InputStream fileInputStream,
-                      @FormDataParam("file") FormDataContentDisposition dataContentDisposition) throws Exception;
+    Map<String, Object> loadFromFile(@FormDataParam("file") InputStream fileInputStream,
+                                     @FormDataParam("file") FormDataContentDisposition dataContentDisposition) throws Exception;
 }
